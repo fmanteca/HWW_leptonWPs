@@ -47,8 +47,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   tree->SetBranchAddress("Lepton_muonIdx",&Lepton_muonIdx);
   Int_t Lepton_electronIdx[20];
   tree->SetBranchAddress("Lepton_electronIdx",&Lepton_electronIdx);
-  Int_t CleanJet_Idx[20];
-  tree->SetBranchAddress("CleanJet_Idx",&CleanJet_Idx);
+  Int_t CleanJet_jetIdx[20];
+  tree->SetBranchAddress("CleanJet_jetIdx",&CleanJet_jetIdx);
 
   Int_t Lepton_isTightMuon_cut_Medium80x[20];
   tree->SetBranchAddress("Lepton_isTightMuon_cut_Medium80x",&Lepton_isTightMuon_cut_Medium80x);
@@ -119,6 +119,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   TH1F* h_eta1 = new TH1F("h_eta1","h_eta1",40,-TMath::Pi(),TMath::Pi());
   TH1F* h_eta2 = new TH1F("h_eta2","h_eta2",40,-TMath::Pi(),TMath::Pi());
   TH1F* h_MET_pt = new TH1F("h_MET_pt","h_MET_pt",40,0,300);
+  TH1F* h_mpmet = new TH1F("h_mpmet","h_mpmet",40,0,150);
   TH1F* h_mll = new TH1F("h_mll","h_mll",40,0,200);
   TH1F* h_ptll = new TH1F("h_ptll","h_ptll",40,0,200);
   TH1F* h_dphill = new TH1F("h_dphill","h_dphill",40,0,TMath::Pi());
@@ -140,7 +141,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      
 
      //------------------------------ Preselection --------------------------------------
-     if(Lepton_pt[0]<20){continue;}
+     if(Lepton_pt[0] < 20 || Lepton_pt[1] < 10){continue;}
      
      event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi;
 
@@ -185,8 +186,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
 
      //------------------------------ Built mpmet --------------------------------------
 
-     MET.SetPtEtaPhi(MET_pt, 0.0, MET_phi, 0.0);
-     trkMET.SetPtEtaPhi(TkMET_pt, 0.0, TkMET_phi, 0.0);
+     MET.SetPtEtaPhiM(MET_pt, 0.0, MET_phi, 0.0);
+     trkMET.SetPtEtaPhiM(TkMET_pt, 0.0, TkMET_phi, 0.0);
 
      fullpmet = MET.Et();
      trkpmet  = trkMET.Et();
@@ -204,31 +205,34 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
 
      mpmet = TMath::Min(trkpmet, fullpmet);
 
+
+
      
      //------------------------------ Selection --------------------------------------
+
      if(cutLevel == "1" || cutLevel == "2" || cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-       if(nLepton>2 && Lepton_pt[2]>10){continue;}
+       if(nLepton > 2 && Lepton_pt[2] > 10){continue;}
      }
      if(cutLevel == "2" || cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-       if(MET_pt<20){continue;}
+       if(ll.M() < 12){continue;}
      }
      if(cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-       if(ll.M() < 12){continue;}
+       if(nCleanJet>=1  && CleanJet_pt[0] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[0]] > -0.5884){continue;}
+       if(nCleanJet>=2  && CleanJet_pt[1] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[1]] > -0.5884){continue;}
+       if(nCleanJet>=3  && CleanJet_pt[2] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[2]] > -0.5884){continue;}
+       if(nCleanJet>=4  && CleanJet_pt[3] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[3]] > -0.5884){continue;}
+       if(nCleanJet>=5  && CleanJet_pt[4] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[4]] > -0.5884){continue;}
+       if(nCleanJet>=6  && CleanJet_pt[5] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[5]] > -0.5884){continue;}
+       if(nCleanJet>=7  && CleanJet_pt[6] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[6]] > -0.5884){continue;}
+       if(nCleanJet>=8  && CleanJet_pt[7] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[7]] > -0.5884){continue;}
+       if(nCleanJet>=9  && CleanJet_pt[8] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[8]] > -0.5884){continue;}
+       if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[9]] > -0.5884){continue;}
      }
      if(cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
 	if(ll.Pt() < 30){continue;}
      }
      if(cutLevel == "5" || cutLevel == "6"){
-       if(nCleanJet>=1  && CleanJet_pt[0] > 20 && Jet_btagCSVV2[CleanJet_Idx[0]] > -0.5884){continue;}
-       if(nCleanJet>=2  && CleanJet_pt[1] > 20 && Jet_btagCSVV2[CleanJet_Idx[1]] > -0.5884){continue;}
-       if(nCleanJet>=3  && CleanJet_pt[2] > 20 && Jet_btagCSVV2[CleanJet_Idx[2]] > -0.5884){continue;}
-       if(nCleanJet>=4  && CleanJet_pt[3] > 20 && Jet_btagCSVV2[CleanJet_Idx[3]] > -0.5884){continue;}
-       if(nCleanJet>=5  && CleanJet_pt[4] > 20 && Jet_btagCSVV2[CleanJet_Idx[4]] > -0.5884){continue;}
-       if(nCleanJet>=6  && CleanJet_pt[5] > 20 && Jet_btagCSVV2[CleanJet_Idx[5]] > -0.5884){continue;}
-       if(nCleanJet>=7  && CleanJet_pt[6] > 20 && Jet_btagCSVV2[CleanJet_Idx[6]] > -0.5884){continue;}
-       if(nCleanJet>=8  && CleanJet_pt[7] > 20 && Jet_btagCSVV2[CleanJet_Idx[7]] > -0.5884){continue;}
-       if(nCleanJet>=9  && CleanJet_pt[8] > 20 && Jet_btagCSVV2[CleanJet_Idx[8]] > -0.5884){continue;}
-       if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_Idx[9]] > -0.5884){continue;}
+       if(MET_pt < 20){continue;}
      }
      if(cutLevel == "6"){
        if(mpmet < 20){continue;}
@@ -313,6 +317,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      h_eta1->Fill(Lepton_eta[0], event_weight);
      h_eta2->Fill(Lepton_eta[1], event_weight);
      h_MET_pt->Fill(MET_pt, event_weight);
+     h_mpmet->Fill(mpmet, event_weight);
      h_mll->Fill(ll.M(), event_weight);
      h_ptll->Fill(ll.Pt(), event_weight);
      h_dphill->Fill(lep1.DeltaPhi(lep2), event_weight);
@@ -333,6 +338,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   h_eta1->Write();
   h_eta2->Write();
   h_MET_pt->Write();
+  h_mpmet->Write();
   h_mll->Write();
   h_ptll->Write();
   h_dphill->Write();
@@ -344,7 +350,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   //for check_jobs.sh
 
   cout << endl;
-  cout << "-------- Done ---------"
+  cout << "-------- Done ---------";
   cout << endl;
 
 
