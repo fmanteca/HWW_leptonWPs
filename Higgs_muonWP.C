@@ -73,6 +73,12 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   tree->SetBranchAddress("Lepton_phi",&Lepton_phi);
   Float_t MET_pt;
   tree->SetBranchAddress("MET_pt",&MET_pt);
+  Float_t MET_phi;
+  tree->SetBranchAddress("MET_phi",&MET_phi);
+  Float_t TkMET_pt;
+  tree->SetBranchAddress("TkMET_pt",&TkMET_pt);
+  Float_t TkMET_phi;
+  tree->SetBranchAddress("TkMET_phi",&TkMET_phi);
   Float_t Jet_btagCSVV2[20];
   tree->SetBranchAddress("Jet_btagCSVV2",&Jet_btagCSVV2);
   Float_t CleanJet_pt[20];
@@ -87,9 +93,21 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   TLorentzVector lep1;
   TLorentzVector lep2;
   TLorentzVector ll;
+  TLorentzVector MET;
+  TLorentzVector trkMET;
   Float_t mass_1;
   Float_t mass_2;
   Float_t event_weight;
+  Float_t dphil1trkmet;
+  Float_t dphil2trkmet;
+  Float_t dphiltrkmet;
+  Float_t dphil1met;
+  Float_t dphil2met;
+  Float_t dphilmet;
+  Float_t fullpmet;
+  Float_t trkpmet;
+  Float_t mpmet;
+
 
 
   // Create the output histograms
@@ -165,7 +183,26 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      ll = lep1 + lep2;
 
 
+     //------------------------------ Built mpmet --------------------------------------
 
+     MET.SetPtEtaPhi(MET_pt, 0.0, MET_phi, 0.0);
+     trkMET.SetPtEtaPhi(TkMET_pt, 0.0, TkMET_phi, 0.0);
+
+     fullpmet = MET.Et();
+     trkpmet  = trkMET.Et();
+
+     dphil1trkmet = TMath::Abs(lep1.DeltaPhi(trkMET));
+     dphil2trkmet = TMath::Abs(lep2.DeltaPhi(trkMET));
+     dphiltrkmet  = TMath::Min(dphil1trkmet, dphil2trkmet);
+
+     dphil1met = TMath::Abs(lep1.DeltaPhi(MET));
+     dphil2met = TMath::Abs(lep2.DeltaPhi(MET));
+     dphilmet  = TMath::Min(dphil1met, dphil2met);
+
+     if (dphilmet    < TMath::Pi() / 2.) fullpmet *= TMath::Sin(dphilmet);
+     if (dphiltrkmet < TMath::Pi() / 2.) trkpmet  *= TMath::Sin(dphiltrkmet);
+
+     mpmet = TMath::Min(trkpmet, fullpmet);
 
      
      //------------------------------ Selection --------------------------------------
@@ -191,10 +228,11 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
        if(nCleanJet>=7  && CleanJet_pt[6] > 20 && Jet_btagCSVV2[CleanJet_Idx[6]] > -0.5884){continue;}
        if(nCleanJet>=8  && CleanJet_pt[7] > 20 && Jet_btagCSVV2[CleanJet_Idx[7]] > -0.5884){continue;}
        if(nCleanJet>=9  && CleanJet_pt[8] > 20 && Jet_btagCSVV2[CleanJet_Idx[8]] > -0.5884){continue;}
-       if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_Idx[9]] > -0.5884){continue;}     }
-     // if(cutLevel == "6"){
-     //   mpMET cut -> to be added
-     // }
+       if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_Idx[9]] > -0.5884){continue;}
+     }
+     if(cutLevel == "6"){
+       if(mpmet < 20){continue;}
+     }
 
 
 
