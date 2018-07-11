@@ -7,17 +7,17 @@
 #include <iostream>
 #include <fstream>
 
-void PrintResults(TString muonWP, TString channel)
+void PrintResults(TString muonWP, TString channel, TString cutLevel)
 {
   TH1::SetDefaultSumw2();
  
-  TFile* file_HWW = new TFile("nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private_" + muonWP + "_" + channel + ".root"); 
-  TFile* file_WW = new TFile("nanoLatino_WWTo2L2Nu_" + muonWP + "_" + channel + ".root"); 
-  TFile* file_DY = new TFile("nanoLatino_DYJetsToLL_M-50_" + muonWP + "_" + channel + ".root"); 
-  TFile* file_TTTo2L2Nu = new TFile("nanoLatino_TTTo2L2Nu_" + muonWP + "_" + channel + ".root"); 
-  TFile* file_TTToSemileptonic = new TFile("nanoLatino_TTToSemileptonic_" + muonWP + "_" + channel + ".root"); 
-  TFile* file_ST = new TFile("nanoLatino_ST_tW_top_" + muonWP + "_" + channel + ".root"); 
-  TFile* file_WJets = new TFile("nanoLatino_WJetsToLNu-LO_" + muonWP + "_" + channel + ".root"); 
+  TFile* file_HWW = new TFile("nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
+  TFile* file_WW = new TFile("nanoLatino_WWTo2L2Nu_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
+  TFile* file_DY = new TFile("nanoLatino_DYJetsToLL_M-50_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
+  TFile* file_TTTo2L2Nu = new TFile("nanoLatino_TTTo2L2Nu_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
+  TFile* file_TTToSemileptonic = new TFile("nanoLatino_TTToSemileptonic_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
+  TFile* file_ST = new TFile("nanoLatino_ST_tW_top_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
+  TFile* file_WJets = new TFile("nanoLatino_WJetsToLNu-LO_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
 
 
   TH1F* h_counter_HWW_pass2Leploose = (TH1F*)file_HWW->Get("h_counter_pass2Leploose"); 
@@ -61,7 +61,7 @@ void PrintResults(TString muonWP, TString channel)
   printf("\n");
   cout << "------------------------------------------------------------------------------------------------";
   printf("\n");
-  cout << "Results for " + muonWP + " muon WP, " + channel + " channel" << endl;
+  cout << "Results for " + muonWP + " muon WP, " + channel + "channel,  cutLevel " + cutLevel << endl;
   cout << "------------------------------------------------------------------------------------------------";
   printf("\n");
   for (int i=0; i<=6; i++){

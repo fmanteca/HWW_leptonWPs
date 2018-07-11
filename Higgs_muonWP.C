@@ -8,7 +8,7 @@
 using namespace std;
 
 
-void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
+void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLevel) {
 
 
   //  Int_t MaxEvents = 200000;
@@ -166,12 +166,24 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
 
      
      //------------------------------ Selection --------------------------------------
-     if(nLepton>2 && Lepton_pt[2]>10){continue;}
-     if(MET_pt<20){continue;}
-     if(ll.M() < 12){continue;}
-     if(ll.Pt() < 30){continue;}
-     //if(Jet_pt[0] > 20 && Jet_btagCSVV2[0] > -0.5884){continue;} //Jet variables: to be checked
-
+     if(cutLevel == "1" || cutLevel == "2" || cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
+       if(nLepton>2 && Lepton_pt[2]>10){continue;}
+     }
+     if(cutLevel == "2" || cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
+       if(MET_pt<20){continue;}
+     }
+     if(cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
+       if(ll.M() < 12){continue;}
+     }
+     if(cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
+	if(ll.Pt() < 30){continue;}
+     }
+     // if(cutLevel == "5" || cutLevel == "6"){
+     //   if(Jet_pt[0] > 20 && Jet_btagCSVV2[0] > -0.5884){continue;} //Jet variables: to be checked
+     // }
+     // if(cutLevel == "6"){
+     //   mpMET cut -> to be added
+     // }
 
 
 
@@ -264,7 +276,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
 
   // Save the results
   //--------------------------------------------------------------------------------------------------------------------------------------
-  TFile output(sample + "_" + muonWP + "_"  + channel + ".root", "RECREATE");
+  TFile output(sample + "_" + muonWP + "_"  + channel + "_cutLevel_" + cutLevel + ".root", "RECREATE");
   h_counter_pass2Leploose->Write();
   h_counter_passWP->Write();
   h_pt1->Write();
@@ -276,5 +288,15 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   h_ptll->Write();
   h_dphill->Write();
   output.Close();
+
+
+
+
+  //for check_jobs.sh
+
+  cout << endl;
+  cout << "-------- Done ---------"
+  cout << endl;
+
 
 }
