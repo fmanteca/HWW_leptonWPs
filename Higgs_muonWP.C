@@ -1,4 +1,4 @@
-//root -l -q -b "Higgs_muonWP.C(\"nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private\",\"Tight\", \"mm\")"
+//root -l -q -b "Higgs_muonWP.C(\"nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private\",\"Tight\", \"mm\", \"5\")"
 
 #include <iostream>
 #include <fstream>
@@ -40,11 +40,15 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   //--------------------------------------------------------------------------------------------------------------------------------------
   Int_t nLepton;
   tree->SetBranchAddress("nLepton",&nLepton);
+  Int_t nCleanJet;
+  tree->SetBranchAddress("nCleanJet",&nCleanJet);
  
   Int_t Lepton_muonIdx[20];
   tree->SetBranchAddress("Lepton_muonIdx",&Lepton_muonIdx);
   Int_t Lepton_electronIdx[20];
   tree->SetBranchAddress("Lepton_electronIdx",&Lepton_electronIdx);
+  Int_t CleanJet_Idx[20];
+  tree->SetBranchAddress("CleanJet_Idx",&CleanJet_Idx);
 
   Int_t Lepton_isTightMuon_cut_Medium80x[20];
   tree->SetBranchAddress("Lepton_isTightMuon_cut_Medium80x",&Lepton_isTightMuon_cut_Medium80x);
@@ -71,8 +75,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   tree->SetBranchAddress("MET_pt",&MET_pt);
   Float_t Jet_btagCSVV2[20];
   tree->SetBranchAddress("Jet_btagCSVV2",&Jet_btagCSVV2);
-  Float_t Jet_pt[20];
-  tree->SetBranchAddress("Jet_pt",&Jet_pt);
+  Float_t CleanJet_pt[20];
+  tree->SetBranchAddress("CleanJet_pt",&CleanJet_pt);
   Float_t puWeight;
   tree->SetBranchAddress("puWeight",&puWeight);
   Float_t baseW;
@@ -105,8 +109,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   // Loop over the tree events
   //--------------------------------------------------------------------------------------------------------------------------------------
   for (int j = 0; j < tree->GetEntries(); ++j){
-  //for (int j = 0; j < 1000; ++j){
-     tree->GetEntry(j);
+    tree->GetEntry(j);
 
 
      // if(j > MaxEvents){
@@ -178,9 +181,17 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      if(cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
 	if(ll.Pt() < 30){continue;}
      }
-     // if(cutLevel == "5" || cutLevel == "6"){
-     //   if(Jet_pt[0] > 20 && Jet_btagCSVV2[0] > -0.5884){continue;} //Jet variables: to be checked
-     // }
+     if(cutLevel == "5" || cutLevel == "6"){
+       if(nCleanJet>=1  && CleanJet_pt[0] > 20 && Jet_btagCSVV2[CleanJet_Idx[0]] > -0.5884){continue;}
+       if(nCleanJet>=2  && CleanJet_pt[1] > 20 && Jet_btagCSVV2[CleanJet_Idx[1]] > -0.5884){continue;}
+       if(nCleanJet>=3  && CleanJet_pt[2] > 20 && Jet_btagCSVV2[CleanJet_Idx[2]] > -0.5884){continue;}
+       if(nCleanJet>=4  && CleanJet_pt[3] > 20 && Jet_btagCSVV2[CleanJet_Idx[3]] > -0.5884){continue;}
+       if(nCleanJet>=5  && CleanJet_pt[4] > 20 && Jet_btagCSVV2[CleanJet_Idx[4]] > -0.5884){continue;}
+       if(nCleanJet>=6  && CleanJet_pt[5] > 20 && Jet_btagCSVV2[CleanJet_Idx[5]] > -0.5884){continue;}
+       if(nCleanJet>=7  && CleanJet_pt[6] > 20 && Jet_btagCSVV2[CleanJet_Idx[6]] > -0.5884){continue;}
+       if(nCleanJet>=8  && CleanJet_pt[7] > 20 && Jet_btagCSVV2[CleanJet_Idx[7]] > -0.5884){continue;}
+       if(nCleanJet>=9  && CleanJet_pt[8] > 20 && Jet_btagCSVV2[CleanJet_Idx[8]] > -0.5884){continue;}
+       if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_Idx[9]] > -0.5884){continue;}     }
      // if(cutLevel == "6"){
      //   mpMET cut -> to be added
      // }
