@@ -1,4 +1,4 @@
-!/bin/bash                                                                                                                            
+#!/bin/bash                                                                                                                            
 mkdir jobs_ouput
 cp Higgs_muonWP.C jobs_ouput
 cd jobs_ouput
