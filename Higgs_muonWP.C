@@ -11,7 +11,7 @@ using namespace std;
 void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
 
 
-  Int_t MaxEvents = 200000;
+  //  Int_t MaxEvents = 200000;
 
   const Double_t MUON_MASS     = 0.106;     // [GeV]
   const Double_t ELECTRON_MASS = 0.000511;  // [GeV]
@@ -21,34 +21,18 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   //--------------------------------------------------------------------------------------------------------------------------------------
   TChain* tree = new TChain("Events");
 
-  TString myFolder = "/eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/Fall2017_nAOD_v1_Study2017/MCl1loose2017__baseW/";
+  TString myFolder = "/eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/Fall2017_nAOD_v1_Study2017/MCl1loose2017__baseW__hadd/";
 
   TString file = "";
 
-  file = myFolder + sample + "__part0.root";
+  file = myFolder + sample + ".root";
   tree->Add(file);
-  file = myFolder + sample + "__part1.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part2.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part3.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part4.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part5.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part6.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part7.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part8.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part9.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part10.root";
-  tree->Add(file);
-  file = myFolder + sample + "__part11.root";
-  tree->Add(file);
+  
+  for (int i=0; i<=20; i++){
+    TString index [21] = {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"};
+    file = myFolder + sample + "__part" + index[i] + ".root";
+    tree->Add(file);
+  }
 
 
 
@@ -106,8 +90,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
 
   // Create the output histograms
   //--------------------------------------------------------------------------------------------------------------------------------------
-  TH1F* h_counter_pass2Leploose = new TH1F("h_counter_pass2Leploose","h_counter_pass2Leploose",1,0,999999999);
-  TH1F* h_counter_passWP = new TH1F("h_counter_passWP","h_counter_passWP",1,0,999999999);
+  TH1F* h_counter_pass2Leploose = new TH1F("h_counter_pass2Leploose","h_counter_pass2Leploose",1,0,9999);
+  TH1F* h_counter_passWP = new TH1F("h_counter_passWP","h_counter_passWP",1,0,9999);
   TH1F* h_pt1 = new TH1F("h_pt1","h_pt1",40,0,300);
   TH1F* h_pt2 = new TH1F("h_pt2","h_pt2",40,0,150);
   TH1F* h_eta1 = new TH1F("h_eta1","h_eta1",40,-TMath::Pi(),TMath::Pi());
@@ -124,12 +108,26 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   //for (int j = 0; j < 1000; ++j){
      tree->GetEntry(j);
 
-     if(nLepton<2){continue;}
 
-     if(j > MaxEvents){
-       cout << "finished for " << MaxEvents << " events" << endl;
-       break;
-     }
+     // if(j > MaxEvents){
+     //   cout << "finished for " << MaxEvents << " events" << endl;
+     //   break;
+     // }
+
+
+     if(nLepton<2){continue;}
+     
+
+     //------------------------------ Preselection --------------------------------------
+     if(Lepton_pt[0]<20){continue;}
+     
+     event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi;
+
+     h_counter_pass2Leploose->Fill(1, event_weight); //counter: at least l2Loose, pt1 > 20 GeV
+
+
+
+
 
 
      //------------------------------ Built the dilepton system --------------------------------------
@@ -163,14 +161,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
 
      ll = lep1 + lep2;
 
-     
 
-     //------------------------------ Preselection --------------------------------------
-     if(Lepton_pt[0]<20){continue;}
-     
-     event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi;
-
-     h_counter_pass2Leploose->Fill(j, event_weight); //counter: at least l2Loose, pt1 > 20 GeV
 
 
      
@@ -179,7 +170,12 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
      if(MET_pt<20){continue;}
      if(ll.M() < 12){continue;}
      if(ll.Pt() < 30){continue;}
-     if(Jet_pt[0] > 20 && Jet_btagCSVV2[0] > -0.5884){continue;} //Jet variables: to be checked
+     //if(Jet_pt[0] > 20 && Jet_btagCSVV2[0] > -0.5884){continue;} //Jet variables: to be checked
+
+
+
+
+
 
 
 
@@ -250,7 +246,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
      
 
 
-     h_counter_passWP->Fill(j, event_weight);	        
+     h_counter_passWP->Fill(1, event_weight);	        
      h_pt1->Fill(Lepton_pt[0], event_weight);
      h_pt2->Fill(Lepton_pt[1], event_weight);
      h_eta1->Fill(Lepton_eta[0], event_weight);
