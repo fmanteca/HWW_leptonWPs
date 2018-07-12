@@ -16,7 +16,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   const Double_t MUON_MASS     = 0.106;     // [GeV]
   const Double_t ELECTRON_MASS = 0.000511;  // [GeV]
   const Double_t lumi = 41.3; // [fb-1]
-
+  
   // Import the nanoLatino Tree
   //--------------------------------------------------------------------------------------------------------------------------------------
   TChain* tree = new TChain("Events");
@@ -25,17 +25,11 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
 
   TString file = "";
 
-  file = myFolder + sample + ".root";
-  tree->Add(file);
-  
-  for (int i=0; i<=20; i++){
-    TString index [21] = {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"};
-    file = myFolder + sample + "__part" + index[i] + ".root";
-    tree->Add(file);
-  }
-
-
-
+  file = myFolder + "nanoLatino_" +sample + ".root";
+  cout<<file<<endl;
+  if(ifstream(file))tree->Add(file);
+  else cout<<"File not loaded"<<endl;
+    
   // Import the variables
   //--------------------------------------------------------------------------------------------------------------------------------------
   Int_t nLepton;
@@ -115,7 +109,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   Int_t lep2Idx;
   Int_t temp_value;
 
-
+  cout<<"Begin..."<<endl;
 
   // Create the output histograms
   //--------------------------------------------------------------------------------------------------------------------------------------
@@ -142,7 +136,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   //--------------------------------------------------------------------------------------------------------------------------------------
   for (int j = 0; j < tree->GetEntries(); ++j){
     tree->GetEntry(j);
-
+    int nentries = tree->GetEntriesFast();
+    if(fmod(j,100000)==0) Printf(" ..... event %d of %d", int(j), int(nentries));
 
      // if(j > MaxEvents){
      //   cout << "finished for " << MaxEvents << " events" << endl;
@@ -392,7 +387,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
 
   // Save the results
   //--------------------------------------------------------------------------------------------------------------------------------------
-  TFile output(sample + "_" + muonWP + "_"  + channel + ".root", "RECREATE");
+  TFile output("nanoLatino_" +sample + "_" + muonWP + "_"  + channel + ".root", "RECREATE");
   h_counter_pass_1->Write();
   h_counter_pass_2->Write();
   h_counter_pass_3->Write();
