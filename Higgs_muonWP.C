@@ -1,4 +1,4 @@
-//root -l -q -b "Higgs_muonWP.C(\"nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private\",\"Tight\", \"mm\", \"5\")"
+//root -l -q -b "Higgs_muonWP.C(\"nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private\",\"Tight\", \"mm\")"
 
 #include <iostream>
 #include <fstream>
@@ -8,7 +8,7 @@
 using namespace std;
 
 
-void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLevel) {
+void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
 
 
   //  Int_t MaxEvents = 200000;
@@ -119,7 +119,14 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
 
   // Create the output histograms
   //--------------------------------------------------------------------------------------------------------------------------------------
-  TH1F* h_counter_pass = new TH1F("h_counter_pass","h_counter_pass",1,0,9999);
+  TH1F* h_counter_pass_1 = new TH1F("h_counter_pass_1","h_counter_pass_1",1,0,9999);
+  TH1F* h_counter_pass_2 = new TH1F("h_counter_pass_2","h_counter_pass_2",1,0,9999);
+  TH1F* h_counter_pass_3 = new TH1F("h_counter_pass_3","h_counter_pass_3",1,0,9999);
+  TH1F* h_counter_pass_4 = new TH1F("h_counter_pass_4","h_counter_pass_4",1,0,9999);
+  TH1F* h_counter_pass_5 = new TH1F("h_counter_pass_5","h_counter_pass_5",1,0,9999);
+  TH1F* h_counter_pass_6 = new TH1F("h_counter_pass_6","h_counter_pass_6",1,0,9999);
+
+
   TH1F* h_pt1 = new TH1F("h_pt1","h_pt1",40,0,300);
   TH1F* h_pt2 = new TH1F("h_pt2","h_pt2",40,0,150);
   TH1F* h_eta1 = new TH1F("h_eta1","h_eta1",40,-TMath::Pi(),TMath::Pi());
@@ -333,41 +340,39 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      
      //------------------------------ Selection --------------------------------------
 
-     if(cutLevel == "1" || cutLevel == "2" || cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-       if(nLepton > (lep2Idx + 1) && Lepton_pt[lep2Idx + 1] > 10){continue;}
-     }
-     if(cutLevel == "2" || cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-       if(ll.M() < 12){continue;}
-     }
-     if(cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-       if(nCleanJet>=1  && CleanJet_pt[0] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[0]] > 0.5803){continue;}
-       if(nCleanJet>=2  && CleanJet_pt[1] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[1]] > 0.5803){continue;}
-       if(nCleanJet>=3  && CleanJet_pt[2] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[2]] > 0.5803){continue;}
-       if(nCleanJet>=4  && CleanJet_pt[3] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[3]] > 0.5803){continue;}
-       if(nCleanJet>=5  && CleanJet_pt[4] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[4]] > 0.5803){continue;}
-       if(nCleanJet>=6  && CleanJet_pt[5] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[5]] > 0.5803){continue;}
-       if(nCleanJet>=7  && CleanJet_pt[6] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[6]] > 0.5803){continue;}
-       if(nCleanJet>=8  && CleanJet_pt[7] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[7]] > 0.5803){continue;}
-       if(nCleanJet>=9  && CleanJet_pt[8] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[8]] > 0.5803){continue;}
-       if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[9]] > 0.5803){continue;}
-     }
-     if(cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-     	if(ll.Pt() < 30){continue;}
-     }
-     if(cutLevel == "5" || cutLevel == "6"){
-       if(MET_pt < 20){continue;}
-     }
-     if(cutLevel == "6"){
-       if(mpmet < 20){continue;}
-     }
-
-
-
-
-    
      event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi;
 
-     h_counter_pass->Fill(1, event_weight);	        
+
+     
+     if(nLepton > (lep2Idx + 1) && Lepton_pt[lep2Idx + 1] > 10){continue;}
+     h_counter_pass_1->Fill(1, event_weight);
+     
+     if(ll.M() < 12){continue;}
+     h_counter_pass_2->Fill(1, event_weight);
+     
+     if(nCleanJet>=1  && CleanJet_pt[0] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[0]] > 0.5803){continue;}
+     if(nCleanJet>=2  && CleanJet_pt[1] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[1]] > 0.5803){continue;}
+     if(nCleanJet>=3  && CleanJet_pt[2] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[2]] > 0.5803){continue;}
+     if(nCleanJet>=4  && CleanJet_pt[3] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[3]] > 0.5803){continue;}
+     if(nCleanJet>=5  && CleanJet_pt[4] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[4]] > 0.5803){continue;}
+     if(nCleanJet>=6  && CleanJet_pt[5] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[5]] > 0.5803){continue;}
+     if(nCleanJet>=7  && CleanJet_pt[6] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[6]] > 0.5803){continue;}
+     if(nCleanJet>=8  && CleanJet_pt[7] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[7]] > 0.5803){continue;}
+     if(nCleanJet>=9  && CleanJet_pt[8] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[8]] > 0.5803){continue;}
+     if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[9]] > 0.5803){continue;}
+     h_counter_pass_3->Fill(1, event_weight);
+     
+     if(ll.Pt() < 30){continue;}
+     h_counter_pass_4->Fill(1, event_weight);
+
+     if(MET_pt < 20){continue;}
+     h_counter_pass_5->Fill(1, event_weight);
+
+     if(mpmet < 20){continue;}
+     h_counter_pass_6->Fill(1, event_weight);
+
+
+
      h_pt1->Fill(Lepton_pt[lep1Idx], event_weight);
      h_pt2->Fill(Lepton_pt[lep2Idx], event_weight);
      h_eta1->Fill(Lepton_eta[lep1Idx], event_weight);
@@ -387,8 +392,13 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
 
   // Save the results
   //--------------------------------------------------------------------------------------------------------------------------------------
-  TFile output(sample + "_" + muonWP + "_"  + channel + "_cutLevel_" + cutLevel + ".root", "RECREATE");
-  h_counter_pass->Write();
+  TFile output(sample + "_" + muonWP + "_"  + channel + ".root", "RECREATE");
+  h_counter_pass_1->Write();
+  h_counter_pass_2->Write();
+  h_counter_pass_3->Write();
+  h_counter_pass_4->Write();
+  h_counter_pass_5->Write();
+  h_counter_pass_6->Write();
   h_pt1->Write();
   h_pt2->Write();
   h_eta1->Write();
