@@ -29,9 +29,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   tree->Add(file);
   
   for (int i=0; i<=20; i++){
-  //for (int i=0; i<=0; i++){
     TString index [21] = {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"};
-    //TString index [1] = {"0"};
     file = myFolder + sample + "__part" + index[i] + ".root";
     tree->Add(file);
   }
@@ -45,33 +43,33 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   Int_t nCleanJet;
   tree->SetBranchAddress("nCleanJet",&nCleanJet);
  
-  Int_t Lepton_muonIdx[20];
+  Int_t Lepton_muonIdx[100];
   tree->SetBranchAddress("Lepton_muonIdx",&Lepton_muonIdx);
-  Int_t Lepton_electronIdx[20];
+  Int_t Lepton_electronIdx[100];
   tree->SetBranchAddress("Lepton_electronIdx",&Lepton_electronIdx);
-  Int_t CleanJet_jetIdx[20];
+  Int_t CleanJet_jetIdx[100];
   tree->SetBranchAddress("CleanJet_jetIdx",&CleanJet_jetIdx);
 
-  Int_t Lepton_isTightMuon_cut_Medium80x[20];
+  Int_t Lepton_isTightMuon_cut_Medium80x[100];
   tree->SetBranchAddress("Lepton_isTightMuon_cut_Medium80x",&Lepton_isTightMuon_cut_Medium80x);
-  Int_t Lepton_isTightMuon_cut_Tight80x[20];
+  Int_t Lepton_isTightMuon_cut_Tight80x[100];
   tree->SetBranchAddress("Lepton_isTightMuon_cut_Tight80x",&Lepton_isTightMuon_cut_Tight80x);
-  Int_t Lepton_isTightMuon_cut_Tight80x_HWWW[20];
+  Int_t Lepton_isTightMuon_cut_Tight80x_HWWW[100];
   tree->SetBranchAddress("Lepton_isTightMuon_cut_Tight80x_HWWW",&Lepton_isTightMuon_cut_Tight80x_HWWW);
 
-  Int_t Lepton_isTightElectron_mvaFall17Iso[20];
+  Int_t Lepton_isTightElectron_mvaFall17Iso[100];
   tree->SetBranchAddress("Lepton_isTightElectron_mvaFall17Iso",&Lepton_isTightElectron_mvaFall17Iso);
 
 
-  Float_t Muon_dxy[20];
+  Float_t Muon_dxy[100];
   tree->SetBranchAddress("Muon_dxy",&Muon_dxy);
-  Float_t Muon_dz[20];
+  Float_t Muon_dz[100];
   tree->SetBranchAddress("Muon_dz",&Muon_dz);
-  Float_t Lepton_pt[20];
+  Float_t Lepton_pt[100];
   tree->SetBranchAddress("Lepton_pt",&Lepton_pt);
-  Float_t Lepton_eta[20];
+  Float_t Lepton_eta[100];
   tree->SetBranchAddress("Lepton_eta",&Lepton_eta);
-  Float_t Lepton_phi[20];
+  Float_t Lepton_phi[100];
   tree->SetBranchAddress("Lepton_phi",&Lepton_phi);
   Float_t MET_pt;
   tree->SetBranchAddress("MET_pt",&MET_pt);
@@ -81,9 +79,9 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   tree->SetBranchAddress("TkMET_pt",&TkMET_pt);
   Float_t TkMET_phi;
   tree->SetBranchAddress("TkMET_phi",&TkMET_phi);
-  Float_t Jet_btagCSVV2[20];
+  Float_t Jet_btagCSVV2[100];
   tree->SetBranchAddress("Jet_btagCSVV2",&Jet_btagCSVV2);
-  Float_t CleanJet_pt[20];
+  Float_t CleanJet_pt[100];
   tree->SetBranchAddress("CleanJet_pt",&CleanJet_pt);
   Float_t puWeight;
   tree->SetBranchAddress("puWeight",&puWeight);
@@ -380,6 +378,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      h_ptll->Fill(ll.Pt(), event_weight);
      h_dphill->Fill(lep1.DeltaPhi(lep2), event_weight);
      
+     cout << event << endl;
      
   }
   
