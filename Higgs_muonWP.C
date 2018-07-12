@@ -29,7 +29,9 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   tree->Add(file);
   
   for (int i=0; i<=20; i++){
+  //for (int i=0; i<=0; i++){
     TString index [21] = {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"};
+    //TString index [1] = {"0"};
     file = myFolder + sample + "__part" + index[i] + ".root";
     tree->Add(file);
   }
@@ -89,6 +91,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   tree->SetBranchAddress("baseW",&baseW);
   Float_t Generator_weight;
   tree->SetBranchAddress("Generator_weight",&Generator_weight);
+  Int_t event;
+  tree->SetBranchAddress("event",&event);
 
   TLorentzVector lep1;
   TLorentzVector lep2;
@@ -255,7 +259,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
        // PT ORDERING (in case pt[m] > pt[k])
        
        if(Lepton_pt[lep2Idx] > Lepton_pt[lep1Idx]){
-	 temp_value = lep2Idx;
+	 temp_value = lep1Idx;
 	 lep1Idx = lep2Idx;
 	 lep2Idx = temp_value;
        }
@@ -350,7 +354,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
        if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[9]] > 0.5803){continue;}
      }
      if(cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-	if(ll.Pt() < 30){continue;}
+     	if(ll.Pt() < 30){continue;}
      }
      if(cutLevel == "5" || cutLevel == "6"){
        if(MET_pt < 20){continue;}
@@ -375,8 +379,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      h_mll->Fill(ll.M(), event_weight);
      h_ptll->Fill(ll.Pt(), event_weight);
      h_dphill->Fill(lep1.DeltaPhi(lep2), event_weight);
-    
-
+     
+     
   }
   
 
