@@ -107,13 +107,17 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   Float_t fullpmet;
   Float_t trkpmet;
   Float_t mpmet;
+  Int_t find_lep1;
+  Int_t find_lep2;
+  Int_t lep1Idx;
+  Int_t lep2Idx;
+  Int_t temp_value;
 
 
 
   // Create the output histograms
   //--------------------------------------------------------------------------------------------------------------------------------------
-  TH1F* h_counter_pass2Leploose = new TH1F("h_counter_pass2Leploose","h_counter_pass2Leploose",1,0,9999);
-  TH1F* h_counter_passWP = new TH1F("h_counter_passWP","h_counter_passWP",1,0,9999);
+  TH1F* h_counter_pass = new TH1F("h_counter_pass","h_counter_pass",1,0,9999);
   TH1F* h_pt1 = new TH1F("h_pt1","h_pt1",40,0,300);
   TH1F* h_pt2 = new TH1F("h_pt2","h_pt2",40,0,150);
   TH1F* h_eta1 = new TH1F("h_eta1","h_eta1",40,-TMath::Pi(),TMath::Pi());
@@ -140,16 +144,133 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      if(nLepton<2){continue;}
      
 
+
+
+     //------------------------------ Check the muon WP (select the objets) --------------------------------------
+
+
+     if(channel == "mm"){ //Different flavor channel: Reject ee and mm channels
+
+       find_lep1 = 0;
+       find_lep2 = 0;
+       lep1Idx = 0;
+
+       for(int k = 0; k < nLepton - 1; k++){
+	 
+	 if(Lepton_muonIdx[k] >= 0){
+	   
+	   if(muonWP == "Medium"){
+	     if(Lepton_isTightMuon_cut_Medium80x[k] == 1){find_lep1=1; lep1Idx=k; break;}
+	   }else if(muonWP == "Medium_HWW"){
+	     if(Lepton_isTightMuon_cut_Medium80x[k] == 1 && Muon_dxy[Lepton_muonIdx[k]] < 0.02 && Muon_dz[Lepton_muonIdx[k]] < 0.1){find_lep1=1; lep1Idx=k; break;}
+	   }else if(muonWP == "Tight"){
+	     if(Lepton_isTightMuon_cut_Tight80x[k] == 1){find_lep1=1; lep1Idx=k; break;}
+	   }else if(muonWP == "Tight_HWW"){
+	     if(Lepton_isTightMuon_cut_Tight80x_HWWW[k] == 1){find_lep1=1; lep1Idx=k; break;}
+	   }else{
+	     cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
+	     break;
+	   }
+	   
+	 }
+	
+       }
+
+
+       if(find_lep1 == 0){continue;}       
+       
+
+       for(int m = lep1Idx + 1; m < nLepton; m++){
+	 
+	 if(Lepton_muonIdx[m] >= 0){
+	   
+	   if(muonWP == "Medium"){
+	     if(Lepton_isTightMuon_cut_Medium80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(muonWP == "Medium_HWW"){
+	     if(Lepton_isTightMuon_cut_Medium80x[m] == 1 && Muon_dxy[Lepton_muonIdx[m]] < 0.02 && Muon_dz[Lepton_muonIdx[m]] < 0.1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(muonWP == "Tight"){
+	     if(Lepton_isTightMuon_cut_Tight80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(muonWP == "Tight_HWW"){
+	     if(Lepton_isTightMuon_cut_Tight80x_HWWW[m] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else{
+	     cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
+	     break;
+	   }
+	   
+	 }
+	
+       }
+
+       if(find_lep2 == 0){continue;}       
+
+     }
+
+
+
+
+
+
+     if(channel == "em"){
+       
+       find_lep1 = 0;
+       find_lep2 = 0;
+
+       for(int k = 0; k < nLepton; k++){
+	 //here you can require a tigher electron WP than the default looseWP one
+	 if(Lepton_electronIdx[k] >= 0){
+	   find_lep1=1;
+	   lep1Idx=k;
+	   break;
+	 }
+	   
+       }
+       
+       if(find_lep1==0){continue;}
+
+
+       for(int m = 0; m < nLepton; m++){
+	 
+	 if(Lepton_muonIdx[m] >= 0){
+	   
+	   if(muonWP == "Medium"){
+	     if(Lepton_isTightMuon_cut_Medium80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(muonWP == "Medium_HWW"){
+	     if(Lepton_isTightMuon_cut_Medium80x[m] == 1 && Muon_dxy[Lepton_muonIdx[m]] < 0.02 && Muon_dz[Lepton_muonIdx[m]] < 0.1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(muonWP == "Tight"){
+	     if(Lepton_isTightMuon_cut_Tight80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(muonWP == "Tight_HWW"){
+	     if(Lepton_isTightMuon_cut_Tight80x_HWWW[m] == 1){find_lep2=1; lep2Idx = m;break;}
+	   }else{
+	     cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
+	     break;
+	   }
+	   
+	 }
+	
+       }
+
+       if(find_lep2 == 0){continue;}       
+       
+
+       // PT ORDERING (in case pt[m] > pt[k])
+       
+       if(Lepton_pt[lep2Idx] > Lepton_pt[lep1Idx]){
+	 temp_value = lep2Idx;
+	 lep1Idx = lep2Idx;
+	 lep2Idx = temp_value;
+       }
+
+     }
+
+
+
+
+
+
      //------------------------------ Preselection --------------------------------------
-     if(Lepton_pt[0] < 20 || Lepton_pt[1] < 10){continue;}
+
+     if(Lepton_pt[lep1Idx] < 20 || Lepton_pt[lep2Idx] < 10){continue;}
      
-     event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi;
-
-     h_counter_pass2Leploose->Fill(1, event_weight); //counter: at least l2Loose, pt1 > 20 GeV
-
-
-
-
 
 
      //------------------------------ Built the dilepton system --------------------------------------
@@ -157,10 +278,10 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      mass_1 = -9999;
      mass_2 = -9999;
 
-     if (Lepton_electronIdx[0] >= 0){
+     if (Lepton_electronIdx[lep1Idx] >= 0){
        mass_1   = ELECTRON_MASS;
      }
-     else if (Lepton_muonIdx[0] >= 0){
+     else if (Lepton_muonIdx[lep1Idx] >= 0){
        mass_1     = MUON_MASS;
      }
      else{
@@ -168,18 +289,18 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      }
 
 
-     if (Lepton_electronIdx[1] >= 0){
+     if (Lepton_electronIdx[lep2Idx] >= 0){
        mass_2   = ELECTRON_MASS;
      }
-     else if (Lepton_muonIdx[1] >= 0){
+     else if (Lepton_muonIdx[lep2Idx] >= 0){
        mass_2     = MUON_MASS;
      }
      else{
        continue;  //lepton 2 is not electron / muon;
      }
 
-     lep1.SetPtEtaPhiM(Lepton_pt[0], Lepton_eta[0], Lepton_phi[0], mass_1); 
-     lep2.SetPtEtaPhiM(Lepton_pt[1], Lepton_eta[1], Lepton_phi[1], mass_2); 
+     lep1.SetPtEtaPhiM(Lepton_pt[lep1Idx], Lepton_eta[lep1Idx], Lepton_phi[lep1Idx], mass_1); 
+     lep2.SetPtEtaPhiM(Lepton_pt[lep2Idx], Lepton_eta[lep2Idx], Lepton_phi[lep2Idx], mass_2); 
 
      ll = lep1 + lep2;
 
@@ -211,22 +332,22 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
      //------------------------------ Selection --------------------------------------
 
      if(cutLevel == "1" || cutLevel == "2" || cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-       if(nLepton > 2 && Lepton_pt[2] > 10){continue;}
+       if(nLepton > (lep2Idx + 1) && Lepton_pt[lep2Idx + 1] > 10){continue;}
      }
      if(cutLevel == "2" || cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
        if(ll.M() < 12){continue;}
      }
      if(cutLevel == "3" || cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
-       if(nCleanJet>=1  && CleanJet_pt[0] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[0]] > -0.5884){continue;}
-       if(nCleanJet>=2  && CleanJet_pt[1] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[1]] > -0.5884){continue;}
-       if(nCleanJet>=3  && CleanJet_pt[2] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[2]] > -0.5884){continue;}
-       if(nCleanJet>=4  && CleanJet_pt[3] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[3]] > -0.5884){continue;}
-       if(nCleanJet>=5  && CleanJet_pt[4] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[4]] > -0.5884){continue;}
-       if(nCleanJet>=6  && CleanJet_pt[5] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[5]] > -0.5884){continue;}
-       if(nCleanJet>=7  && CleanJet_pt[6] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[6]] > -0.5884){continue;}
-       if(nCleanJet>=8  && CleanJet_pt[7] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[7]] > -0.5884){continue;}
-       if(nCleanJet>=9  && CleanJet_pt[8] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[8]] > -0.5884){continue;}
-       if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[9]] > -0.5884){continue;}
+       if(nCleanJet>=1  && CleanJet_pt[0] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[0]] > 0.5803){continue;}
+       if(nCleanJet>=2  && CleanJet_pt[1] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[1]] > 0.5803){continue;}
+       if(nCleanJet>=3  && CleanJet_pt[2] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[2]] > 0.5803){continue;}
+       if(nCleanJet>=4  && CleanJet_pt[3] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[3]] > 0.5803){continue;}
+       if(nCleanJet>=5  && CleanJet_pt[4] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[4]] > 0.5803){continue;}
+       if(nCleanJet>=6  && CleanJet_pt[5] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[5]] > 0.5803){continue;}
+       if(nCleanJet>=7  && CleanJet_pt[6] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[6]] > 0.5803){continue;}
+       if(nCleanJet>=8  && CleanJet_pt[7] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[7]] > 0.5803){continue;}
+       if(nCleanJet>=9  && CleanJet_pt[8] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[8]] > 0.5803){continue;}
+       if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[9]] > 0.5803){continue;}
      }
      if(cutLevel == "4" || cutLevel == "5" || cutLevel == "6"){
 	if(ll.Pt() < 30){continue;}
@@ -241,81 +362,14 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
 
 
 
+    
+     event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi;
 
-
-
-     //------------------------------ Check the muon WP --------------------------------------
-
-     if(channel == "em"){ //Different flavor channel: Reject ee and mm channels
-       if((Lepton_muonIdx[0] >= 0 && Lepton_muonIdx[1] >= 0) || (Lepton_electronIdx[0] >= 0 && Lepton_electronIdx[1] >= 0)){ continue;}
-       
-       if(Lepton_muonIdx[0] >= 0 && Lepton_electronIdx[1] >= 0){ //me
-	 //if(Lepton_isTightElectron_mvaFall17Iso[1] !=1) {continue;}
-	 
-	 if(muonWP == "Medium"){
-	   if(Lepton_isTightMuon_cut_Medium80x[0] != 1){continue;}
-	 }else if(muonWP == "Medium_HWW"){
-	   if(Lepton_isTightMuon_cut_Medium80x[0] != 1 || Muon_dxy[Lepton_muonIdx[0]] > 0.02 || Muon_dz[Lepton_muonIdx[0]] > 0.1){continue;}
-	 }else if(muonWP == "Tight"){
-	   if(Lepton_isTightMuon_cut_Tight80x[0] != 1){continue;}
-	 }else if(muonWP == "Tight_HWW"){
-	   if(Lepton_isTightMuon_cut_Tight80x_HWWW[0] != 1){continue;}
-	 }else{
-	   cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
-	   break;
-	 }
-	 
-
-       }else if(Lepton_muonIdx[1] >= 0 && Lepton_electronIdx[0] >= 0){ //em
-	 //if(Lepton_isTightElectron_mvaFall17Iso[0] !=1) {continue;}
-	 
-	 if(muonWP == "Medium"){
-	   if(Lepton_isTightMuon_cut_Medium80x[1] != 1){continue;}
-	 }else if(muonWP == "Medium_HWW"){
-	   if(Lepton_isTightMuon_cut_Medium80x[1] != 1 || Muon_dxy[Lepton_muonIdx[1]] > 0.02 || Muon_dz[Lepton_muonIdx[1]] > 0.1){continue;}
-	 }else if(muonWP == "Tight"){
-	   if(Lepton_isTightMuon_cut_Tight80x[1] != 1){continue;}
-	 }else if(muonWP == "Tight_HWW"){
-	   if(Lepton_isTightMuon_cut_Tight80x_HWWW[1] != 1){continue;}
-	 }else{
-	   cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
-	   break;
-	 }
-       }
-
-     }
-
-       
-     else if(channel == "mm"){ //Same flavor channel
-       if(Lepton_muonIdx[0] < 0 || Lepton_muonIdx[1] < 0){ continue;}
-       
-       if(muonWP == "Medium"){
-	 if(Lepton_isTightMuon_cut_Medium80x[0] != 1 || Lepton_isTightMuon_cut_Medium80x[1] != 1){continue;}
-	 }else if(muonWP == "Medium_HWW"){
-	   if(Lepton_isTightMuon_cut_Medium80x[0] != 1 || Lepton_isTightMuon_cut_Medium80x[1] != 1 || Muon_dxy[Lepton_muonIdx[0]] > 0.02 || Muon_dz[Lepton_muonIdx[0]] > 0.1 || Muon_dxy[Lepton_muonIdx[1]] > 0.02 || Muon_dz[Lepton_muonIdx[1]] > 0.1){continue;}
-       }else if(muonWP == "Tight"){
-	 if(Lepton_isTightMuon_cut_Tight80x[0] != 1 || Lepton_isTightMuon_cut_Tight80x[1] != 1){continue;}
-       }else if(muonWP == "Tight_HWW"){
-	 if(Lepton_isTightMuon_cut_Tight80x_HWWW[0] != 1 || Lepton_isTightMuon_cut_Tight80x_HWWW[1] != 1){continue;}
-       }else{
-	 cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
-	 break;
-       }
-     }
-
-     
-     else{
-       cout << "channel options: em, mm" << endl;
-       break;
-     }
-     
-
-
-     h_counter_passWP->Fill(1, event_weight);	        
-     h_pt1->Fill(Lepton_pt[0], event_weight);
-     h_pt2->Fill(Lepton_pt[1], event_weight);
-     h_eta1->Fill(Lepton_eta[0], event_weight);
-     h_eta2->Fill(Lepton_eta[1], event_weight);
+     h_counter_pass->Fill(1, event_weight);	        
+     h_pt1->Fill(Lepton_pt[lep1Idx], event_weight);
+     h_pt2->Fill(Lepton_pt[lep2Idx], event_weight);
+     h_eta1->Fill(Lepton_eta[lep1Idx], event_weight);
+     h_eta2->Fill(Lepton_eta[lep2Idx], event_weight);
      h_MET_pt->Fill(MET_pt, event_weight);
      h_mpmet->Fill(mpmet, event_weight);
      h_mll->Fill(ll.M(), event_weight);
@@ -331,8 +385,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString cutLe
   // Save the results
   //--------------------------------------------------------------------------------------------------------------------------------------
   TFile output(sample + "_" + muonWP + "_"  + channel + "_cutLevel_" + cutLevel + ".root", "RECREATE");
-  h_counter_pass2Leploose->Write();
-  h_counter_passWP->Write();
+  h_counter_pass->Write();
   h_pt1->Write();
   h_pt2->Write();
   h_eta1->Write();
