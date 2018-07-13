@@ -37,33 +37,33 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   Int_t nCleanJet;
   tree->SetBranchAddress("nCleanJet",&nCleanJet);
  
-  Int_t Lepton_muonIdx[100];
+  Int_t Lepton_muonIdx[200];
   tree->SetBranchAddress("Lepton_muonIdx",&Lepton_muonIdx);
-  Int_t Lepton_electronIdx[100];
+  Int_t Lepton_electronIdx[200];
   tree->SetBranchAddress("Lepton_electronIdx",&Lepton_electronIdx);
-  Int_t CleanJet_jetIdx[100];
+  Int_t CleanJet_jetIdx[200];
   tree->SetBranchAddress("CleanJet_jetIdx",&CleanJet_jetIdx);
 
-  Int_t Lepton_isTightMuon_cut_Medium80x[100];
+  Int_t Lepton_isTightMuon_cut_Medium80x[200];
   tree->SetBranchAddress("Lepton_isTightMuon_cut_Medium80x",&Lepton_isTightMuon_cut_Medium80x);
-  Int_t Lepton_isTightMuon_cut_Tight80x[100];
+  Int_t Lepton_isTightMuon_cut_Tight80x[200];
   tree->SetBranchAddress("Lepton_isTightMuon_cut_Tight80x",&Lepton_isTightMuon_cut_Tight80x);
-  Int_t Lepton_isTightMuon_cut_Tight80x_HWWW[100];
+  Int_t Lepton_isTightMuon_cut_Tight80x_HWWW[200];
   tree->SetBranchAddress("Lepton_isTightMuon_cut_Tight80x_HWWW",&Lepton_isTightMuon_cut_Tight80x_HWWW);
 
-  Int_t Lepton_isTightElectron_mvaFall17Iso[100];
+  Int_t Lepton_isTightElectron_mvaFall17Iso[200];
   tree->SetBranchAddress("Lepton_isTightElectron_mvaFall17Iso",&Lepton_isTightElectron_mvaFall17Iso);
 
 
-  Float_t Muon_dxy[100];
+  Float_t Muon_dxy[200];
   tree->SetBranchAddress("Muon_dxy",&Muon_dxy);
-  Float_t Muon_dz[100];
+  Float_t Muon_dz[200];
   tree->SetBranchAddress("Muon_dz",&Muon_dz);
-  Float_t Lepton_pt[100];
+  Float_t Lepton_pt[200];
   tree->SetBranchAddress("Lepton_pt",&Lepton_pt);
-  Float_t Lepton_eta[100];
+  Float_t Lepton_eta[200];
   tree->SetBranchAddress("Lepton_eta",&Lepton_eta);
-  Float_t Lepton_phi[100];
+  Float_t Lepton_phi[200];
   tree->SetBranchAddress("Lepton_phi",&Lepton_phi);
   Float_t MET_pt;
   tree->SetBranchAddress("MET_pt",&MET_pt);
@@ -73,9 +73,9 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   tree->SetBranchAddress("TkMET_pt",&TkMET_pt);
   Float_t TkMET_phi;
   tree->SetBranchAddress("TkMET_phi",&TkMET_phi);
-  Float_t Jet_btagCSVV2[100];
+  Float_t Jet_btagCSVV2[200];
   tree->SetBranchAddress("Jet_btagCSVV2",&Jet_btagCSVV2);
-  Float_t CleanJet_pt[100];
+  Float_t CleanJet_pt[200];
   tree->SetBranchAddress("CleanJet_pt",&CleanJet_pt);
   Float_t puWeight;
   tree->SetBranchAddress("puWeight",&puWeight);
