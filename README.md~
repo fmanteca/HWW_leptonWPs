@@ -15,9 +15,7 @@ cmsenv
 ## 1. Submit the jobs to the lxplus batch:
 
 ```
-python submit.py >> launch.sh
-
-./launch.sh
+./submit_Higgs_muonWP.sh
 ```
 
 
@@ -30,23 +28,15 @@ python submit.py >> launch.sh
 
 re-submit the jobs that failed... or just run them interactively: 
 ```
-root -l -q -b "Higgs_muonWP.C(\"nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private\",\"Medium_HWW\", \"em\", \"high\", \"0j\")"
+root -l -q -b "Higgs_muonWP.C(\"nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private\",\"Medium\", \"mm\", \"1\")"
 ```
 
 
 
-## 3. Merge the rootfiles
+## 3. Print the results
 
 ```
-./merge.sh
-```
-
-
-
-## 4. Print the results
-
-```
-root -l -q -b "PrintResults.C(\"Medium_HWW\", \"em\", \"high\", \"0j\")"
+root -l -q -b "PrintResults.C(\"Tight\", \"mm\")"
 ```
 
 

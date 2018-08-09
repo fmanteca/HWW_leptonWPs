@@ -1,4 +1,4 @@
-//root -l -q -b "Higgs_muonWP.C(\"nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private\",\"Tight\", \"mm\")"
+//root -l -q -b "Higgs_muonWP.C(\"GluGluHToWWTo2L2NuPowheg_M125_private\",\"Tight\", \"mm\", \"high\", \"0j\")"
 
 #include <iostream>
 #include <fstream>
@@ -8,11 +8,13 @@
 using namespace std;
 
 
-void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
+void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_cut, TString njet) {
 
 
-  //  Int_t MaxEvents = 200000;
+  //Int_t MaxEvents = 1000;
 
+  TFile* root_output = new TFile("/afs/cern.ch/work/f/fernanpe/CMSSW_10_1_0/src/jobs_output/nanoLatino_" + sample + "_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root", "recreate");
+  
   const Double_t MUON_MASS     = 0.106;     // [GeV]
   const Double_t ELECTRON_MASS = 0.000511;  // [GeV]
   const Double_t lumi = 41.3; // [fb-1]
@@ -43,6 +45,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   tree->SetBranchAddress("Lepton_electronIdx",&Lepton_electronIdx);
   Int_t CleanJet_jetIdx[200];
   tree->SetBranchAddress("CleanJet_jetIdx",&CleanJet_jetIdx);
+  Int_t Lepton_pdgId[200];
+  tree->SetBranchAddress("Lepton_pdgId",&Lepton_pdgId);
 
   Int_t Lepton_isTightMuon_cut_Medium80x[200];
   tree->SetBranchAddress("Lepton_isTightMuon_cut_Medium80x",&Lepton_isTightMuon_cut_Medium80x);
@@ -77,6 +81,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   tree->SetBranchAddress("Jet_btagCSVV2",&Jet_btagCSVV2);
   Float_t CleanJet_pt[200];
   tree->SetBranchAddress("CleanJet_pt",&CleanJet_pt);
+  Float_t CleanJet_eta[200];
+  tree->SetBranchAddress("CleanJet_eta",&CleanJet_eta);
   Float_t puWeight;
   tree->SetBranchAddress("puWeight",&puWeight);
   Float_t baseW;
@@ -103,6 +109,9 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   Float_t fullpmet;
   Float_t trkpmet;
   Float_t mpmet;
+  Float_t dphillmet;
+  Float_t mth;
+  Float_t mtw2;
   Int_t find_lep1;
   Int_t find_lep2;
   Int_t lep1Idx;
@@ -119,6 +128,9 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   TH1F* h_counter_pass_4 = new TH1F("h_counter_pass_4","h_counter_pass_4",1,0,9999);
   TH1F* h_counter_pass_5 = new TH1F("h_counter_pass_5","h_counter_pass_5",1,0,9999);
   TH1F* h_counter_pass_6 = new TH1F("h_counter_pass_6","h_counter_pass_6",1,0,9999);
+  TH1F* h_counter_pass_7 = new TH1F("h_counter_pass_7","h_counter_pass_7",1,0,9999);
+  TH1F* h_counter_pass_8 = new TH1F("h_counter_pass_8","h_counter_pass_8",1,0,9999);
+  TH1F* h_counter_pass_9 = new TH1F("h_counter_pass_9","h_counter_pass_9",1,0,9999);
 
 
   TH1F* h_pt1 = new TH1F("h_pt1","h_pt1",40,0,300);
@@ -127,10 +139,13 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   TH1F* h_eta2 = new TH1F("h_eta2","h_eta2",40,-TMath::Pi(),TMath::Pi());
   TH1F* h_MET_pt = new TH1F("h_MET_pt","h_MET_pt",40,0,300);
   TH1F* h_mpmet = new TH1F("h_mpmet","h_mpmet",40,0,150);
+  TH1F* h_mth = new TH1F("h_mth","h_mth",40,0,300);
+  TH1F* h_mtw2 = new TH1F("h_mtw2","h_mtw2",40,0,300);
   TH1F* h_mll = new TH1F("h_mll","h_mll",40,0,200);
   TH1F* h_ptll = new TH1F("h_ptll","h_ptll",40,0,200);
   TH1F* h_dphill = new TH1F("h_dphill","h_dphill",40,0,TMath::Pi());
 
+  root_output->cd();
 
   // Loop over the tree events
   //--------------------------------------------------------------------------------------------------------------------------------------
@@ -144,8 +159,17 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
      //   break;
      // }
 
+     //------------------------------ Pre-Preselection --------------------------------------
 
      if(nLepton<2){continue;}
+
+     if(njet == "0j"){
+       if(nCleanJet>=1 && (CleanJet_pt[0] > 30 || TMath::Abs(CleanJet_eta[0]) > 4.7)){continue;} //let pass the nCleanJet = 0 events
+     }else if(njet == "1j"){
+       if(nCleanJet == 0){ continue;}
+       if(nCleanJet>=1 && (CleanJet_pt[0] < 30 || TMath::Abs(CleanJet_eta[0]) > 4.7)){continue;} // !0jet
+       if(nCleanJet>=1 && CleanJet_pt[1] > 30){continue;}
+     }
      
 
 
@@ -273,7 +297,15 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
 
      //------------------------------ Preselection --------------------------------------
 
-     if(Lepton_pt[lep1Idx] < 20 || Lepton_pt[lep2Idx] < 10){continue;}
+     if(TMath::Abs(Lepton_eta[lep1Idx]) > 2.4 || TMath::Abs(Lepton_eta[lep2Idx]) > 2.4){continue;}
+
+     if(Lepton_pdgId[lep1Idx] * Lepton_pdgId[lep2Idx] > 0){continue;}
+
+     if(pt2_cut == "high"){
+       if(Lepton_pt[lep1Idx] < 25. || Lepton_pt[lep2Idx] < 20.){continue;}
+     }else if (pt2_cut == "low"){
+       if(Lepton_pt[lep1Idx] < 25. || Lepton_pt[lep2Idx] > 20. || Lepton_pt[lep2Idx] < 10.){continue;}
+     }
      
 
 
@@ -331,41 +363,59 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
      mpmet = TMath::Min(trkpmet, fullpmet);
 
 
+     //------------------------- Built mth and mtw2 ----------------------------------
 
+     dphillmet = TMath::Abs(ll.DeltaPhi(MET));
+     mth = TMath::Sqrt( 2. * ll.Pt() * MET.Pt() * (1. - TMath::Cos(dphillmet)));
+     mtw2 = TMath::Sqrt( 2. * lep2.Pt() * MET.Pt() * (1. - TMath::Cos(dphil2met)));
+      
      
      //------------------------------ Selection --------------------------------------
 
-     event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi;
-
+     //event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi; //old 2016 latino weight
+     event_weight = puWeight * baseW * Generator_weight * lumi;
 
      
      if(nLepton > (lep2Idx + 1) && Lepton_pt[lep2Idx + 1] > 10){continue;}
      h_counter_pass_1->Fill(1, event_weight);
+     root_output->Write("",TObject::kOverwrite);
      
-     if(ll.M() < 12){continue;}
+     if(ll.M() < 12.){continue;}
      h_counter_pass_2->Fill(1, event_weight);
      
-     if(nCleanJet>=1  && CleanJet_pt[0] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[0]] > 0.5803){continue;}
-     if(nCleanJet>=2  && CleanJet_pt[1] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[1]] > 0.5803){continue;}
-     if(nCleanJet>=3  && CleanJet_pt[2] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[2]] > 0.5803){continue;}
-     if(nCleanJet>=4  && CleanJet_pt[3] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[3]] > 0.5803){continue;}
-     if(nCleanJet>=5  && CleanJet_pt[4] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[4]] > 0.5803){continue;}
-     if(nCleanJet>=6  && CleanJet_pt[5] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[5]] > 0.5803){continue;}
-     if(nCleanJet>=7  && CleanJet_pt[6] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[6]] > 0.5803){continue;}
-     if(nCleanJet>=8  && CleanJet_pt[7] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[7]] > 0.5803){continue;}
-     if(nCleanJet>=9  && CleanJet_pt[8] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[8]] > 0.5803){continue;}
-     if(nCleanJet>=10 && CleanJet_pt[9] > 20 && Jet_btagCSVV2[CleanJet_jetIdx[9]] > 0.5803){continue;}
+     if(nCleanJet>=1  && CleanJet_pt[0] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[0]] > 0.5803){continue;}
+     if(nCleanJet>=2  && CleanJet_pt[1] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[1]] > 0.5803){continue;}
+     if(nCleanJet>=3  && CleanJet_pt[2] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[2]] > 0.5803){continue;}
+     if(nCleanJet>=4  && CleanJet_pt[3] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[3]] > 0.5803){continue;}
+     if(nCleanJet>=5  && CleanJet_pt[4] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[4]] > 0.5803){continue;}
+     if(nCleanJet>=6  && CleanJet_pt[5] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[5]] > 0.5803){continue;}
+     if(nCleanJet>=7  && CleanJet_pt[6] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[6]] > 0.5803){continue;}
+     if(nCleanJet>=8  && CleanJet_pt[7] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[7]] > 0.5803){continue;}
+     if(nCleanJet>=9  && CleanJet_pt[8] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[8]] > 0.5803){continue;}
+     if(nCleanJet>=10 && CleanJet_pt[9] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[9]] > 0.5803){continue;}
      h_counter_pass_3->Fill(1, event_weight);
-     
-     if(ll.Pt() < 30){continue;}
-     h_counter_pass_4->Fill(1, event_weight);
 
-     if(MET_pt < 20){continue;}
+     if(channel == "mm"){
+       if(TMath::Abs(ll.M() - 91.188) < 15.){continue;}
+       h_counter_pass_4->Fill(1, event_weight);
+     }else if(channel == "em"){
+       h_counter_pass_4->Fill(1, event_weight);
+     }
+
+     if(ll.Pt() < 30.){continue;}
      h_counter_pass_5->Fill(1, event_weight);
 
-     if(mpmet < 20){continue;}
+     if(MET_pt < 20.){continue;}
      h_counter_pass_6->Fill(1, event_weight);
 
+     if(mpmet < 20.){continue;}
+     h_counter_pass_7->Fill(1, event_weight);
+     
+     if(mth < 60.){continue;}
+     h_counter_pass_8->Fill(1, event_weight);
+
+     if(mtw2 < 30.){continue;}
+     h_counter_pass_9->Fill(1, event_weight);
 
 
      h_pt1->Fill(Lepton_pt[lep1Idx], event_weight);
@@ -374,6 +424,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
      h_eta2->Fill(Lepton_eta[lep2Idx], event_weight);
      h_MET_pt->Fill(MET_pt, event_weight);
      h_mpmet->Fill(mpmet, event_weight);
+     h_mth->Fill(mth, event_weight);
+     h_mtw2->Fill(mtw2, event_weight);
      h_mll->Fill(ll.M(), event_weight);
      h_ptll->Fill(ll.Pt(), event_weight);
      h_dphill->Fill(lep1.DeltaPhi(lep2), event_weight);
@@ -383,27 +435,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel) {
   }
   
 
-
-
-  // Save the results
-  //--------------------------------------------------------------------------------------------------------------------------------------
-  TFile output("nanoLatino_" +sample + "_" + muonWP + "_"  + channel + ".root", "RECREATE");
-  h_counter_pass_1->Write();
-  h_counter_pass_2->Write();
-  h_counter_pass_3->Write();
-  h_counter_pass_4->Write();
-  h_counter_pass_5->Write();
-  h_counter_pass_6->Write();
-  h_pt1->Write();
-  h_pt2->Write();
-  h_eta1->Write();
-  h_eta2->Write();
-  h_MET_pt->Write();
-  h_mpmet->Write();
-  h_mll->Write();
-  h_ptll->Write();
-  h_dphill->Write();
-  output.Close();
+  root_output->Close();
 
 
 

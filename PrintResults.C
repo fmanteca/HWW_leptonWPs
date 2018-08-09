@@ -7,78 +7,286 @@
 #include <iostream>
 #include <fstream>
 
-void PrintResults(TString muonWP, TString channel, TString cutLevel)
+void PrintResults(TString muonWP, TString channel, TString pt2_cut, TString njet)
 {
   TH1::SetDefaultSumw2();
  
-  TFile* file_HWW = new TFile("nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
-  TFile* file_WW = new TFile("nanoLatino_WWTo2L2Nu_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
-  TFile* file_DY = new TFile("nanoLatino_DYJetsToLL_M-50_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
-  TFile* file_TTTo2L2Nu = new TFile("nanoLatino_TTTo2L2Nu_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
-  TFile* file_TTToSemileptonic = new TFile("nanoLatino_TTToSemileptonic_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
-  TFile* file_ST = new TFile("nanoLatino_ST_tW_top_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
-  TFile* file_WJets = new TFile("nanoLatino_WJetsToLNu-LO_" + muonWP + "_" + channel + "_cutLevel_" + cutLevel + ".root"); 
+  TFile* file_HWW = new TFile("jobs_output/01_HWW_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root"); 
+  TFile* file_WW = new TFile("jobs_output/02_WW_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root"); 
+  TFile* file_DY = new TFile("jobs_output/03_DY_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root"); 
+  TFile* file_TTTo2L2Nu = new TFile("jobs_output/04_TTTo2L2Nu_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root"); 
+  TFile* file_TTToSemileptonic = new TFile("jobs_output/05_TTToSemileptonic_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root"); 
+  TFile* file_ST = new TFile("jobs_output/06_ST_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root"); 
+  TFile* file_WJets = new TFile("jobs_output/07_WJets_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root"); 
+ 
 
+  TH1F* h_counter_HWW_pass_1 = (TH1F*)file_HWW->Get("h_counter_pass_1"); 
+  TH1F* h_counter_WW_pass_1 = (TH1F*)file_WW->Get("h_counter_pass_1"); 
+  TH1F* h_counter_DY_pass_1 = (TH1F*)file_DY->Get("h_counter_pass_1"); 
+  TH1F* h_counter_TTTo2L2Nu_pass_1 = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass_1"); 
+  TH1F* h_counter_TTToSemileptonic_pass_1 = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass_1"); 
+  TH1F* h_counter_ST_pass_1 = (TH1F*)file_ST->Get("h_counter_pass_1"); 
+  TH1F* h_counter_WJets_pass_1 = (TH1F*)file_WJets->Get("h_counter_pass_1"); 
 
-  TH1F* h_counter_HWW_pass2Leploose = (TH1F*)file_HWW->Get("h_counter_pass2Leploose"); 
-  TH1F* h_counter_HWW_passWP = (TH1F*)file_HWW->Get("h_counter_passWP"); 
-  TH1F* h_counter_WW_pass2Leploose = (TH1F*)file_WW->Get("h_counter_pass2Leploose"); 
-  TH1F* h_counter_WW_passWP = (TH1F*)file_WW->Get("h_counter_passWP"); 
-  TH1F* h_counter_DY_pass2Leploose = (TH1F*)file_DY->Get("h_counter_pass2Leploose"); 
-  TH1F* h_counter_DY_passWP = (TH1F*)file_DY->Get("h_counter_passWP"); 
-  TH1F* h_counter_TTTo2L2Nu_pass2Leploose = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass2Leploose"); 
-  TH1F* h_counter_TTTo2L2Nu_passWP = (TH1F*)file_TTTo2L2Nu->Get("h_counter_passWP"); 
-  TH1F* h_counter_TTToSemileptonic_pass2Leploose = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass2Leploose"); 
-  TH1F* h_counter_TTToSemileptonic_passWP = (TH1F*)file_TTToSemileptonic->Get("h_counter_passWP"); 
-  TH1F* h_counter_ST_pass2Leploose = (TH1F*)file_ST->Get("h_counter_pass2Leploose"); 
-  TH1F* h_counter_ST_passWP = (TH1F*)file_ST->Get("h_counter_passWP"); 
-  TH1F* h_counter_WJets_pass2Leploose = (TH1F*)file_WJets->Get("h_counter_pass2Leploose"); 
-  TH1F* h_counter_WJets_passWP = (TH1F*)file_WJets->Get("h_counter_passWP"); 
-
-
-  Float_t eff_HWW  = h_counter_HWW_passWP->Integral() / h_counter_HWW_pass2Leploose->Integral();
-  Float_t eff_WW  = h_counter_WW_passWP->Integral() / h_counter_WW_pass2Leploose->Integral();
-  Float_t eff_DY  = h_counter_DY_passWP->Integral() / h_counter_DY_pass2Leploose->Integral();
-  Float_t eff_TTTo2L2Nu  = h_counter_TTTo2L2Nu_passWP->Integral() / h_counter_TTTo2L2Nu_pass2Leploose->Integral();
-  Float_t eff_TTToSemileptonic  = h_counter_TTToSemileptonic_passWP->Integral() / h_counter_TTToSemileptonic_pass2Leploose->Integral();
-  Float_t eff_ST  = h_counter_ST_passWP->Integral() / h_counter_ST_pass2Leploose->Integral();
-  Float_t eff_WJets  = h_counter_WJets_passWP->Integral() / h_counter_WJets_pass2Leploose->Integral();
   
-  Float_t sum_bkg = h_counter_WW_passWP->Integral() + h_counter_DY_passWP->Integral() + h_counter_TTTo2L2Nu_passWP->Integral() + h_counter_TTToSemileptonic_passWP->Integral() + h_counter_ST_passWP->Integral() + h_counter_WJets_passWP->Integral();
+  Float_t sum_bkg_1 = h_counter_WW_pass_1->Integral() + h_counter_DY_pass_1->Integral() + h_counter_TTTo2L2Nu_pass_1->Integral() + h_counter_TTToSemileptonic_pass_1->Integral() + h_counter_ST_pass_1->Integral() + h_counter_WJets_pass_1->Integral();
 
-  Float_t significance_sqrt_sb = h_counter_HWW_passWP->Integral() / TMath::Sqrt(h_counter_HWW_passWP->Integral() + sum_bkg);
-  Float_t significance_sqrt_b = h_counter_HWW_passWP->Integral() / TMath::Sqrt(sum_bkg);
-  Float_t significance_b = h_counter_HWW_passWP->Integral() / sum_bkg;
+  Float_t significance_sqrt_sb_1 = h_counter_HWW_pass_1->Integral() / TMath::Sqrt(h_counter_HWW_pass_1->Integral() + sum_bkg_1);
+  Float_t significance_sqrt_b_1 = h_counter_HWW_pass_1->Integral() / TMath::Sqrt(sum_bkg_1);
+  Float_t significance_b_1 = h_counter_HWW_pass_1->Integral() / sum_bkg_1;
 
 
 
-  //----------------------------------------------------------------------------------------------------------------------------------
-  //Print the results
 
-  string samples [7] = {"HWW           ", "WW            ", "DY            ", "TTDileptonic  ", "TTSemileptonic", "SingleTop     ", "WJets         "};
-  Float_t efficiencies[7] = {eff_HWW, eff_WW, eff_DY, eff_TTTo2L2Nu, eff_TTToSemileptonic, eff_ST, eff_WJets};
 
-  printf("\n");
-  cout << "------------------------------------------------------------------------------------------------";
-  printf("\n");
-  cout << "Results for " + muonWP + " muon WP, " + channel + "channel,  cutLevel " + cutLevel << endl;
-  cout << "------------------------------------------------------------------------------------------------";
-  printf("\n");
-  for (int i=0; i<=6; i++){
-    printf(" Sample: %s   Efficiency: %5.3f",
-	   samples[i].c_str(),
-	   efficiencies[i]);
-    printf("\n");
-  }
-  printf("\n");
-  cout << "------------------------------------------------------------------------------------------------";
-  printf("\n");
+  TH1F* h_counter_HWW_pass_2 = (TH1F*)file_HWW->Get("h_counter_pass_2"); 
+  TH1F* h_counter_WW_pass_2 = (TH1F*)file_WW->Get("h_counter_pass_2"); 
+  TH1F* h_counter_DY_pass_2 = (TH1F*)file_DY->Get("h_counter_pass_2"); 
+  TH1F* h_counter_TTTo2L2Nu_pass_2 = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass_2"); 
+  TH1F* h_counter_TTToSemileptonic_pass_2 = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass_2"); 
+  TH1F* h_counter_ST_pass_2 = (TH1F*)file_ST->Get("h_counter_pass_2"); 
+  TH1F* h_counter_WJets_pass_2 = (TH1F*)file_WJets->Get("h_counter_pass_2"); 
+
   
-  cout << "Significance S/sqrt(S+B) = " << significance_sqrt_sb << endl;
-  cout << "Significance S/sqrt(B)   = " << significance_sqrt_b << endl;
-  cout << "Significance S/B         = " << significance_b << endl;
+  Float_t sum_bkg_2 = h_counter_WW_pass_2->Integral() + h_counter_DY_pass_2->Integral() + h_counter_TTTo2L2Nu_pass_2->Integral() + h_counter_TTToSemileptonic_pass_2->Integral() + h_counter_ST_pass_2->Integral() + h_counter_WJets_pass_2->Integral();
 
-  cout << "------------------------------------------------------------------------------------------------";
-  printf("\n");
+  Float_t significance_sqrt_sb_2 = h_counter_HWW_pass_2->Integral() / TMath::Sqrt(h_counter_HWW_pass_2->Integral() + sum_bkg_2);
+  Float_t significance_sqrt_b_2 = h_counter_HWW_pass_2->Integral() / TMath::Sqrt(sum_bkg_2);
+  Float_t significance_b_2 = h_counter_HWW_pass_2->Integral() / sum_bkg_2;
+
+
+
+  TH1F* h_counter_HWW_pass_3 = (TH1F*)file_HWW->Get("h_counter_pass_3"); 
+  TH1F* h_counter_WW_pass_3 = (TH1F*)file_WW->Get("h_counter_pass_3"); 
+  TH1F* h_counter_DY_pass_3 = (TH1F*)file_DY->Get("h_counter_pass_3"); 
+  TH1F* h_counter_TTTo2L2Nu_pass_3 = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass_3"); 
+  TH1F* h_counter_TTToSemileptonic_pass_3 = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass_3"); 
+  TH1F* h_counter_ST_pass_3 = (TH1F*)file_ST->Get("h_counter_pass_3"); 
+  TH1F* h_counter_WJets_pass_3 = (TH1F*)file_WJets->Get("h_counter_pass_3"); 
+
+  
+  Float_t sum_bkg_3 = h_counter_WW_pass_3->Integral() + h_counter_DY_pass_3->Integral() + h_counter_TTTo2L2Nu_pass_3->Integral() + h_counter_TTToSemileptonic_pass_3->Integral() + h_counter_ST_pass_3->Integral() + h_counter_WJets_pass_3->Integral();
+
+  Float_t significance_sqrt_sb_3 = h_counter_HWW_pass_3->Integral() / TMath::Sqrt(h_counter_HWW_pass_3->Integral() + sum_bkg_3);
+  Float_t significance_sqrt_b_3 = h_counter_HWW_pass_3->Integral() / TMath::Sqrt(sum_bkg_3);
+  Float_t significance_b_3 = h_counter_HWW_pass_3->Integral() / sum_bkg_3;
+
+
+
+  TH1F* h_counter_HWW_pass_4 = (TH1F*)file_HWW->Get("h_counter_pass_4"); 
+  TH1F* h_counter_WW_pass_4 = (TH1F*)file_WW->Get("h_counter_pass_4"); 
+  TH1F* h_counter_DY_pass_4 = (TH1F*)file_DY->Get("h_counter_pass_4"); 
+  TH1F* h_counter_TTTo2L2Nu_pass_4 = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass_4"); 
+  TH1F* h_counter_TTToSemileptonic_pass_4 = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass_4"); 
+  TH1F* h_counter_ST_pass_4 = (TH1F*)file_ST->Get("h_counter_pass_4"); 
+  TH1F* h_counter_WJets_pass_4 = (TH1F*)file_WJets->Get("h_counter_pass_4"); 
+
+  
+  Float_t sum_bkg_4 = h_counter_WW_pass_4->Integral() + h_counter_DY_pass_4->Integral() + h_counter_TTTo2L2Nu_pass_4->Integral() + h_counter_TTToSemileptonic_pass_4->Integral() + h_counter_ST_pass_4->Integral() + h_counter_WJets_pass_4->Integral();
+
+  Float_t significance_sqrt_sb_4 = h_counter_HWW_pass_4->Integral() / TMath::Sqrt(h_counter_HWW_pass_4->Integral() + sum_bkg_4);
+  Float_t significance_sqrt_b_4 = h_counter_HWW_pass_4->Integral() / TMath::Sqrt(sum_bkg_4);
+  Float_t significance_b_4 = h_counter_HWW_pass_4->Integral() / sum_bkg_4;
+
+
+
+
+
+  TH1F* h_counter_HWW_pass_5 = (TH1F*)file_HWW->Get("h_counter_pass_5"); 
+  TH1F* h_counter_WW_pass_5 = (TH1F*)file_WW->Get("h_counter_pass_5"); 
+  TH1F* h_counter_DY_pass_5 = (TH1F*)file_DY->Get("h_counter_pass_5"); 
+  TH1F* h_counter_TTTo2L2Nu_pass_5 = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass_5"); 
+  TH1F* h_counter_TTToSemileptonic_pass_5 = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass_5"); 
+  TH1F* h_counter_ST_pass_5 = (TH1F*)file_ST->Get("h_counter_pass_5"); 
+  TH1F* h_counter_WJets_pass_5 = (TH1F*)file_WJets->Get("h_counter_pass_5"); 
+
+  
+  Float_t sum_bkg_5 = h_counter_WW_pass_5->Integral() + h_counter_DY_pass_5->Integral() + h_counter_TTTo2L2Nu_pass_5->Integral() + h_counter_TTToSemileptonic_pass_5->Integral() + h_counter_ST_pass_5->Integral() + h_counter_WJets_pass_5->Integral();
+
+  Float_t significance_sqrt_sb_5 = h_counter_HWW_pass_5->Integral() / TMath::Sqrt(h_counter_HWW_pass_5->Integral() + sum_bkg_5);
+  Float_t significance_sqrt_b_5 = h_counter_HWW_pass_5->Integral() / TMath::Sqrt(sum_bkg_5);
+  Float_t significance_b_5 = h_counter_HWW_pass_5->Integral() / sum_bkg_5;
+
+
+
+
+
+  TH1F* h_counter_HWW_pass_6 = (TH1F*)file_HWW->Get("h_counter_pass_6"); 
+  TH1F* h_counter_WW_pass_6 = (TH1F*)file_WW->Get("h_counter_pass_6"); 
+  TH1F* h_counter_DY_pass_6 = (TH1F*)file_DY->Get("h_counter_pass_6"); 
+  TH1F* h_counter_TTTo2L2Nu_pass_6 = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass_6"); 
+  TH1F* h_counter_TTToSemileptonic_pass_6 = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass_6"); 
+  TH1F* h_counter_ST_pass_6 = (TH1F*)file_ST->Get("h_counter_pass_6"); 
+  TH1F* h_counter_WJets_pass_6 = (TH1F*)file_WJets->Get("h_counter_pass_6"); 
+
+  
+  Float_t sum_bkg_6 = h_counter_WW_pass_6->Integral() + h_counter_DY_pass_6->Integral() + h_counter_TTTo2L2Nu_pass_6->Integral() + h_counter_TTToSemileptonic_pass_6->Integral() + h_counter_ST_pass_6->Integral() + h_counter_WJets_pass_6->Integral();
+
+  Float_t significance_sqrt_sb_6 = h_counter_HWW_pass_6->Integral() / TMath::Sqrt(h_counter_HWW_pass_6->Integral() + sum_bkg_6);
+  Float_t significance_sqrt_b_6 = h_counter_HWW_pass_6->Integral() / TMath::Sqrt(sum_bkg_6);
+  Float_t significance_b_6 = h_counter_HWW_pass_6->Integral() / sum_bkg_6;
+
+
+
+  TH1F* h_counter_HWW_pass_7 = (TH1F*)file_HWW->Get("h_counter_pass_7"); 
+  TH1F* h_counter_WW_pass_7 = (TH1F*)file_WW->Get("h_counter_pass_7"); 
+  TH1F* h_counter_DY_pass_7 = (TH1F*)file_DY->Get("h_counter_pass_7"); 
+  TH1F* h_counter_TTTo2L2Nu_pass_7 = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass_7"); 
+  TH1F* h_counter_TTToSemileptonic_pass_7 = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass_7"); 
+  TH1F* h_counter_ST_pass_7 = (TH1F*)file_ST->Get("h_counter_pass_7"); 
+  TH1F* h_counter_WJets_pass_7 = (TH1F*)file_WJets->Get("h_counter_pass_7"); 
+
+  
+  Float_t sum_bkg_7 = h_counter_WW_pass_7->Integral() + h_counter_DY_pass_7->Integral() + h_counter_TTTo2L2Nu_pass_7->Integral() + h_counter_TTToSemileptonic_pass_7->Integral() + h_counter_ST_pass_7->Integral() + h_counter_WJets_pass_7->Integral();
+
+  Float_t significance_sqrt_sb_7 = h_counter_HWW_pass_7->Integral() / TMath::Sqrt(h_counter_HWW_pass_7->Integral() + sum_bkg_7);
+  Float_t significance_sqrt_b_7 = h_counter_HWW_pass_7->Integral() / TMath::Sqrt(sum_bkg_7);
+  Float_t significance_b_7 = h_counter_HWW_pass_7->Integral() / sum_bkg_7;
+
+
+
+  TH1F* h_counter_HWW_pass_8 = (TH1F*)file_HWW->Get("h_counter_pass_8"); 
+  TH1F* h_counter_WW_pass_8 = (TH1F*)file_WW->Get("h_counter_pass_8"); 
+  TH1F* h_counter_DY_pass_8 = (TH1F*)file_DY->Get("h_counter_pass_8"); 
+  TH1F* h_counter_TTTo2L2Nu_pass_8 = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass_8"); 
+  TH1F* h_counter_TTToSemileptonic_pass_8 = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass_8"); 
+  TH1F* h_counter_ST_pass_8 = (TH1F*)file_ST->Get("h_counter_pass_8"); 
+  TH1F* h_counter_WJets_pass_8 = (TH1F*)file_WJets->Get("h_counter_pass_8"); 
+
+  
+  Float_t sum_bkg_8 = h_counter_WW_pass_8->Integral() + h_counter_DY_pass_8->Integral() + h_counter_TTTo2L2Nu_pass_8->Integral() + h_counter_TTToSemileptonic_pass_8->Integral() + h_counter_ST_pass_8->Integral() + h_counter_WJets_pass_8->Integral();
+
+  Float_t significance_sqrt_sb_8 = h_counter_HWW_pass_8->Integral() / TMath::Sqrt(h_counter_HWW_pass_8->Integral() + sum_bkg_8);
+  Float_t significance_sqrt_b_8 = h_counter_HWW_pass_8->Integral() / TMath::Sqrt(sum_bkg_8);
+  Float_t significance_b_8 = h_counter_HWW_pass_8->Integral() / sum_bkg_8;
+
+
+
+
+  TH1F* h_counter_HWW_pass_9 = (TH1F*)file_HWW->Get("h_counter_pass_9"); 
+  TH1F* h_counter_WW_pass_9 = (TH1F*)file_WW->Get("h_counter_pass_9"); 
+  TH1F* h_counter_DY_pass_9 = (TH1F*)file_DY->Get("h_counter_pass_9"); 
+  TH1F* h_counter_TTTo2L2Nu_pass_9 = (TH1F*)file_TTTo2L2Nu->Get("h_counter_pass_9"); 
+  TH1F* h_counter_TTToSemileptonic_pass_9 = (TH1F*)file_TTToSemileptonic->Get("h_counter_pass_9"); 
+  TH1F* h_counter_ST_pass_9 = (TH1F*)file_ST->Get("h_counter_pass_9"); 
+  TH1F* h_counter_WJets_pass_9 = (TH1F*)file_WJets->Get("h_counter_pass_9"); 
+
+  
+  Float_t sum_bkg_9 = h_counter_WW_pass_9->Integral() + h_counter_DY_pass_9->Integral() + h_counter_TTTo2L2Nu_pass_9->Integral() + h_counter_TTToSemileptonic_pass_9->Integral() + h_counter_ST_pass_9->Integral() + h_counter_WJets_pass_9->Integral();
+
+  Float_t significance_sqrt_sb_9 = h_counter_HWW_pass_9->Integral() / TMath::Sqrt(h_counter_HWW_pass_9->Integral() + sum_bkg_9);
+  Float_t significance_sqrt_b_9 = h_counter_HWW_pass_9->Integral() / TMath::Sqrt(sum_bkg_9);
+  Float_t significance_b_9 = h_counter_HWW_pass_9->Integral() / sum_bkg_9;
+
+
+  
+
+
+  Float_t counter_HWW_pass_1 = h_counter_HWW_pass_1->Integral();
+  Float_t counter_HWW_pass_2 = h_counter_HWW_pass_2->Integral();
+  Float_t counter_HWW_pass_3 = h_counter_HWW_pass_3->Integral();
+  Float_t counter_HWW_pass_4 = h_counter_HWW_pass_4->Integral();
+  Float_t counter_HWW_pass_5 = h_counter_HWW_pass_5->Integral();
+  Float_t counter_HWW_pass_6 = h_counter_HWW_pass_6->Integral();
+  Float_t counter_HWW_pass_7 = h_counter_HWW_pass_7->Integral();
+  Float_t counter_HWW_pass_8 = h_counter_HWW_pass_8->Integral();
+  Float_t counter_HWW_pass_9 = h_counter_HWW_pass_9->Integral();
+
+  Float_t counter_WW_pass_1 = h_counter_WW_pass_1->Integral();
+  Float_t counter_WW_pass_2 = h_counter_WW_pass_2->Integral();
+  Float_t counter_WW_pass_3 = h_counter_WW_pass_3->Integral();
+  Float_t counter_WW_pass_4 = h_counter_WW_pass_4->Integral();
+  Float_t counter_WW_pass_5 = h_counter_WW_pass_5->Integral();
+  Float_t counter_WW_pass_6 = h_counter_WW_pass_6->Integral();
+  Float_t counter_WW_pass_7 = h_counter_WW_pass_7->Integral();
+  Float_t counter_WW_pass_8 = h_counter_WW_pass_8->Integral();
+  Float_t counter_WW_pass_9 = h_counter_WW_pass_9->Integral();
+
+  Float_t counter_DY_pass_1 = h_counter_DY_pass_1->Integral();
+  Float_t counter_DY_pass_2 = h_counter_DY_pass_2->Integral();
+  Float_t counter_DY_pass_3 = h_counter_DY_pass_3->Integral();
+  Float_t counter_DY_pass_4 = h_counter_DY_pass_4->Integral();
+  Float_t counter_DY_pass_5 = h_counter_DY_pass_5->Integral();
+  Float_t counter_DY_pass_6 = h_counter_DY_pass_6->Integral();
+  Float_t counter_DY_pass_7 = h_counter_DY_pass_7->Integral();
+  Float_t counter_DY_pass_8 = h_counter_DY_pass_8->Integral();
+  Float_t counter_DY_pass_9 = h_counter_DY_pass_9->Integral();
+
+  Float_t counter_TTTo2L2Nu_pass_1 = h_counter_TTTo2L2Nu_pass_1->Integral();
+  Float_t counter_TTTo2L2Nu_pass_2 = h_counter_TTTo2L2Nu_pass_2->Integral();
+  Float_t counter_TTTo2L2Nu_pass_3 = h_counter_TTTo2L2Nu_pass_3->Integral();
+  Float_t counter_TTTo2L2Nu_pass_4 = h_counter_TTTo2L2Nu_pass_4->Integral();
+  Float_t counter_TTTo2L2Nu_pass_5 = h_counter_TTTo2L2Nu_pass_5->Integral();
+  Float_t counter_TTTo2L2Nu_pass_6 = h_counter_TTTo2L2Nu_pass_6->Integral();
+  Float_t counter_TTTo2L2Nu_pass_7 = h_counter_TTTo2L2Nu_pass_7->Integral();
+  Float_t counter_TTTo2L2Nu_pass_8 = h_counter_TTTo2L2Nu_pass_8->Integral();
+  Float_t counter_TTTo2L2Nu_pass_9 = h_counter_TTTo2L2Nu_pass_9->Integral();
+
+  Float_t counter_TTToSemileptonic_pass_1 = h_counter_TTToSemileptonic_pass_1->Integral();
+  Float_t counter_TTToSemileptonic_pass_2 = h_counter_TTToSemileptonic_pass_2->Integral();
+  Float_t counter_TTToSemileptonic_pass_3 = h_counter_TTToSemileptonic_pass_3->Integral();
+  Float_t counter_TTToSemileptonic_pass_4 = h_counter_TTToSemileptonic_pass_4->Integral();
+  Float_t counter_TTToSemileptonic_pass_5 = h_counter_TTToSemileptonic_pass_5->Integral();
+  Float_t counter_TTToSemileptonic_pass_6 = h_counter_TTToSemileptonic_pass_6->Integral();
+  Float_t counter_TTToSemileptonic_pass_7 = h_counter_TTToSemileptonic_pass_7->Integral();
+  Float_t counter_TTToSemileptonic_pass_8 = h_counter_TTToSemileptonic_pass_8->Integral();
+  Float_t counter_TTToSemileptonic_pass_9 = h_counter_TTToSemileptonic_pass_9->Integral();
+
+  Float_t counter_ST_pass_1 = h_counter_ST_pass_1->Integral();
+  Float_t counter_ST_pass_2 = h_counter_ST_pass_2->Integral();
+  Float_t counter_ST_pass_3 = h_counter_ST_pass_3->Integral();
+  Float_t counter_ST_pass_4 = h_counter_ST_pass_4->Integral();
+  Float_t counter_ST_pass_5 = h_counter_ST_pass_5->Integral();
+  Float_t counter_ST_pass_6 = h_counter_ST_pass_6->Integral();
+  Float_t counter_ST_pass_7 = h_counter_ST_pass_7->Integral();
+  Float_t counter_ST_pass_8 = h_counter_ST_pass_8->Integral();
+  Float_t counter_ST_pass_9 = h_counter_ST_pass_9->Integral();
+
+  Float_t counter_WJets_pass_1 = h_counter_WJets_pass_1->Integral();
+  Float_t counter_WJets_pass_2 = h_counter_WJets_pass_2->Integral();
+  Float_t counter_WJets_pass_3 = h_counter_WJets_pass_3->Integral();
+  Float_t counter_WJets_pass_4 = h_counter_WJets_pass_4->Integral();
+  Float_t counter_WJets_pass_5 = h_counter_WJets_pass_5->Integral();
+  Float_t counter_WJets_pass_6 = h_counter_WJets_pass_6->Integral();
+  Float_t counter_WJets_pass_7 = h_counter_WJets_pass_7->Integral();
+  Float_t counter_WJets_pass_8 = h_counter_WJets_pass_8->Integral();
+  Float_t counter_WJets_pass_9 = h_counter_WJets_pass_9->Integral();
+
+
+
+  // cout<<"\\documentclass[11pt,a4paper]{article}"<<endl;
+  // cout<<"\\usepackage[margin=.85in]{geometry}"<<endl;
+  // cout<<"\\usepackage[font={footnotesize}]{caption}"<<endl;
+  // cout<<"\\usepackage{titlesec}"<<endl;
+  // cout<<"\\usepackage{graphicx}"<<endl;
+  // cout<<"\\usepackage{verbatim}"<<endl;
+  // cout<<"\\usepackage{amsmath}"<<endl;
+  // cout<<"\\setlength{\\parskip}{2,5mm}"<<endl;
+
+  cout<<"\\begin{document}"<<endl;
+  cout<<"\\begin{table}[htbp]"<<endl;
+  cout<<"\\begin{center}"<<endl;
+
+  cout<<"{\\small"<<endl;
+  cout<<"\\begin{tabular}{lcccccccc}"<<endl;
+  cout<<"\\hline"<<endl;
+  cout<<"Cut Level          &  HWW  &  WW  &  DY  &  TTTo2L2Nu  &  TTToSemileptonic  &  ST  &  Wjets  &  Significance" << "\\" << "\\" << endl;
+  cout<<"\\hline"<<endl;
+  cout<<"pT $>$ 25/20, pT3 $<$ 10 [GeV] & " << counter_HWW_pass_1  << " & " << counter_WW_pass_1 <<  " & " << counter_DY_pass_1 << " & " << counter_TTTo2L2Nu_pass_1 << " & " << counter_TTToSemileptonic_pass_1 << " & " << counter_ST_pass_1 << " & " << counter_WJets_pass_1 << " & " << significance_sqrt_sb_1 << "\\" << "\\" << endl;
+  cout<<"mll $>$ 12 GeV           & " << counter_HWW_pass_2  << " & " << counter_WW_pass_2 <<  " & " << counter_DY_pass_2 << " & " << counter_TTTo2L2Nu_pass_2 << " & " << counter_TTToSemileptonic_pass_2 << " & " << counter_ST_pass_2 << " & " << counter_WJets_pass_2 << " & " << significance_sqrt_sb_2 << "\\" << "\\" << endl;
+  cout<<"bVeto CSVV2L           & " << counter_HWW_pass_3  << " & " << counter_WW_pass_3 <<  " & " << counter_DY_pass_3 << " & " << counter_TTTo2L2Nu_pass_3 << " & " << counter_TTToSemileptonic_pass_3 << " & " << counter_ST_pass_3 << " & " << counter_WJets_pass_3 << " & " << significance_sqrt_sb_3 << "\\" << "\\" << endl;
+  cout<<"ZVeto (15 GeV)           & " << counter_HWW_pass_4  << " & " << counter_WW_pass_4 <<  " & " << counter_DY_pass_4 << " & " << counter_TTTo2L2Nu_pass_4 << " & " << counter_TTToSemileptonic_pass_4 << " & " << counter_ST_pass_4 << " & " << counter_WJets_pass_4 << " & " << significance_sqrt_sb_4 << "\\" << "\\" << endl;
+  cout<<"pTll $>$ 30 GeV          & " << counter_HWW_pass_5  << " & " << counter_WW_pass_5 <<  " & " << counter_DY_pass_5 << " & " << counter_TTTo2L2Nu_pass_5 << " & " << counter_TTToSemileptonic_pass_5 << " & " << counter_ST_pass_5 << " & " << counter_WJets_pass_5 << " & " << significance_sqrt_sb_5 << "\\" << "\\" << endl;
+  cout<<"PFMET $>$ 20 GeV         & " << counter_HWW_pass_6  << " & " << counter_WW_pass_6 <<  " & " << counter_DY_pass_6 << " & " << counter_TTTo2L2Nu_pass_6 << " & " << counter_TTToSemileptonic_pass_6 << " & " << counter_ST_pass_6 << " & " << counter_WJets_pass_6 << " & " << significance_sqrt_sb_6 << "\\" << "\\" << endl;
+  cout<<"mpmet $>$ 20 GeV         & " << counter_HWW_pass_7  << " & " << counter_WW_pass_7 <<  " & " << counter_DY_pass_7 << " & " << counter_TTTo2L2Nu_pass_7 << " & " << counter_TTToSemileptonic_pass_7 << " & " << counter_ST_pass_7 << " & " << counter_WJets_pass_7 << " & " << significance_sqrt_sb_7 << "\\" << "\\" << endl;
+  cout<<"mth $>$ 60 GeV           & " << counter_HWW_pass_8  << " & " << counter_WW_pass_8 <<  " & " << counter_DY_pass_8 << " & " << counter_TTTo2L2Nu_pass_8 << " & " << counter_TTToSemileptonic_pass_8 << " & " << counter_ST_pass_8 << " & " << counter_WJets_pass_8 << " & " << significance_sqrt_sb_8 << "\\" << "\\" << endl;
+  cout<<"mtw2 $>$ 30 GeV          & " << counter_HWW_pass_9  << " & " << counter_WW_pass_9 <<  " & " << counter_DY_pass_9 << " & " << counter_TTTo2L2Nu_pass_9 << " & " << counter_TTToSemileptonic_pass_9 << " & " << counter_ST_pass_9 << " & " << counter_WJets_pass_9 << " & " << significance_sqrt_sb_9 << "\\" << "\\" << endl;
+  cout<<"\\hline"<<endl;
+  cout<<"\\end{tabular}"<<endl;
+  cout<<"\\caption{" << muonWP << " muon working point, " << channel << " channel" << "}"<<endl;
+  cout<<"\\end{center}"<<endl;
+  cout<<"\\end{table}"<<endl;
+
+  cout<<"\\end{document}"<<endl;
 
 }
