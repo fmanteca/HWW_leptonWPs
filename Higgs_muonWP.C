@@ -58,7 +58,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
   Int_t Lepton_isTightElectron_mvaFall17Iso[200];
   tree->SetBranchAddress("Lepton_isTightElectron_mvaFall17Iso",&Lepton_isTightElectron_mvaFall17Iso);
 
-
+  Float_t Electron_mvaFall17Iso_WP80[200];
+  tree->SetBranchAddress("Electron_mvaFall17Iso_WP80",&Electron_mvaFall17Iso_WP80);
   Float_t Muon_dxy[200];
   tree->SetBranchAddress("Muon_dxy",&Muon_dxy);
   Float_t Muon_dz[200];
@@ -244,13 +245,10 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
        find_lep2 = 0;
 
        for(int k = 0; k < nLepton; k++){
-	 //here you can require a tigher electron WP than the default looseWP one
+	 // FIX the electron WP
 	 if(Lepton_electronIdx[k] >= 0){
-	   find_lep1=1;
-	   lep1Idx=k;
-	   break;
+	   if(Electron_mvaFall17Iso_WP80[Lepton_electronIdx[k]] == 1){find_lep1=1; lep1Idx=k; break;}
 	 }
-	   
        }
        
        if(find_lep1==0){continue;}
