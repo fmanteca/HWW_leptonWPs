@@ -58,7 +58,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
   Int_t Lepton_isTightElectron_mvaFall17Iso[200];
   tree->SetBranchAddress("Lepton_isTightElectron_mvaFall17Iso",&Lepton_isTightElectron_mvaFall17Iso);
 
-  Float_t Electron_mvaFall17Iso_WP80[200];
+  Bool_t Electron_mvaFall17Iso_WP80[200];
   tree->SetBranchAddress("Electron_mvaFall17Iso_WP80",&Electron_mvaFall17Iso_WP80);
   Float_t Muon_dxy[200];
   tree->SetBranchAddress("Muon_dxy",&Muon_dxy);
@@ -145,8 +145,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
   TH1F* h_mll = new TH1F("h_mll","h_mll",40,0,200);
   TH1F* h_ptll = new TH1F("h_ptll","h_ptll",40,0,200);
   TH1F* h_dphill = new TH1F("h_dphill","h_dphill",40,0,TMath::Pi());
+  
 
-  root_output->cd();
 
   // Loop over the tree events
   //--------------------------------------------------------------------------------------------------------------------------------------
@@ -169,20 +169,16 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      }else if(njet == "1j"){
        if(nCleanJet == 0){ continue;}
        if(nCleanJet>=1 && (CleanJet_pt[0] < 30 || TMath::Abs(CleanJet_eta[0]) > 4.7)){continue;} // !0jet
-       if(nCleanJet>=1 && CleanJet_pt[1] > 30){continue;}
+       if(nCleanJet>=2 && CleanJet_pt[1] > 30){continue;}
      }
      
 
-
-
      //------------------------------ Check the muon WP (select the objets) --------------------------------------
-
 
      if(channel == "mm"){ //Different flavor channel: Reject ee and mm channels
 
        find_lep1 = 0;
        find_lep2 = 0;
-       lep1Idx = 0;
 
        for(int k = 0; k < nLepton - 1; k++){
 	 
@@ -238,7 +234,6 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
 
 
 
-
      if(channel == "em"){
        
        find_lep1 = 0;
@@ -257,7 +252,6 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
        for(int m = 0; m < nLepton; m++){
 	 
 	 if(Lepton_muonIdx[m] >= 0){
-	   
 	   if(muonWP == "Medium"){
 	     if(Lepton_isTightMuon_cut_Medium80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
 	   }else if(muonWP == "Medium_HWW"){
@@ -287,9 +281,6 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
        }
 
      }
-
-
-
 
 
 
@@ -431,9 +422,31 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      //cout << event << endl; //for debuging
      
   }
-  
 
-  root_output->Close();
+
+  root_output->cd();  
+  h_counter_pass_1->Write();
+  h_counter_pass_2->Write();
+  h_counter_pass_3->Write();
+  h_counter_pass_4->Write();
+  h_counter_pass_5->Write();
+  h_counter_pass_6->Write();
+  h_counter_pass_7->Write();
+  h_counter_pass_8->Write();
+  h_counter_pass_9->Write();
+  h_pt1->Write();
+  h_pt2->Write();
+  h_eta1->Write();
+  h_eta2->Write();
+  h_MET_pt->Write();
+  h_mpmet->Write();
+  h_mth->Write();
+  h_mtw2->Write();
+  h_mll->Write();
+  h_ptll->Write();
+  h_dphill->Write();
+
+  delete root_output;
 
 
 
