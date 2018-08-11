@@ -367,7 +367,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      
      if(nLepton > (lep2Idx + 1) && Lepton_pt[lep2Idx + 1] > 10){continue;}
      h_counter_pass_1->Fill(1, event_weight);
-     root_output->Write("",TObject::kOverwrite);
+     //root_output->Write("",TObject::kOverwrite);
      
      if(ll.M() < 12.){continue;}
      h_counter_pass_2->Fill(1, event_weight);
