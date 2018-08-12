@@ -10,6 +10,8 @@
 void PrintResults(TString muonWP, TString channel, TString pt2_cut, TString njet)
 {
   TH1::SetDefaultSumw2();
+  std::cout << std::fixed;
+  std::cout << std::setprecision(2);
  
   TFile* file_HWW = new TFile("jobs_output/01_HWW_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root"); 
   TFile* file_WW = new TFile("jobs_output/02_WW_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root"); 
@@ -254,20 +256,12 @@ void PrintResults(TString muonWP, TString channel, TString pt2_cut, TString njet
 
 
 
-  // cout<<"\\documentclass[11pt,a4paper]{article}"<<endl;
-  // cout<<"\\usepackage[margin=.85in]{geometry}"<<endl;
-  // cout<<"\\usepackage[font={footnotesize}]{caption}"<<endl;
-  // cout<<"\\usepackage{titlesec}"<<endl;
-  // cout<<"\\usepackage{graphicx}"<<endl;
-  // cout<<"\\usepackage{verbatim}"<<endl;
-  // cout<<"\\usepackage{amsmath}"<<endl;
-  // cout<<"\\setlength{\\parskip}{2,5mm}"<<endl;
+
+  cout <<"\\documentclass[10pt]{article}"<<endl;
+  cout <<"\\usepackage[margin=0.3in,footskip=0.25in]{geometry}"<<endl;
 
   cout<<"\\begin{document}"<<endl;
   cout<<"\\begin{table}[htbp]"<<endl;
-  cout<<"\\begin{center}"<<endl;
-
-  cout<<"{\\small"<<endl;
   cout<<"\\begin{tabular}{lcccccccc}"<<endl;
   cout<<"\\hline"<<endl;
   cout<<"Cut Level          &  HWW  &  WW  &  DY  &  TTTo2L2Nu  &  TTToSemileptonic  &  ST  &  Wjets  &  Significance" << "\\" << "\\" << endl;
@@ -283,10 +277,8 @@ void PrintResults(TString muonWP, TString channel, TString pt2_cut, TString njet
   cout<<"mtw2 $>$ 30 GeV          & " << counter_HWW_pass_9  << " & " << counter_WW_pass_9 <<  " & " << counter_DY_pass_9 << " & " << counter_TTTo2L2Nu_pass_9 << " & " << counter_TTToSemileptonic_pass_9 << " & " << counter_ST_pass_9 << " & " << counter_WJets_pass_9 << " & " << significance_sqrt_sb_9 << "\\" << "\\" << endl;
   cout<<"\\hline"<<endl;
   cout<<"\\end{tabular}"<<endl;
-  cout<<"\\caption{" << muonWP << " muon working point, " << channel << " channel" << "}"<<endl;
-  cout<<"\\end{center}"<<endl;
+  cout<<"\\caption{" << muonWP << " muon working point, " << channel << " channel, " << pt2_cut << " pT2 cut, " << njet << " jet bin" << "}"<<endl;
   cout<<"\\end{table}"<<endl;
-
   cout<<"\\end{document}"<<endl;
 
 }

@@ -147,6 +147,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
   TH1F* h_dphill = new TH1F("h_dphill","h_dphill",40,0,TMath::Pi());
   
 
+  root_output->cd();  
 
   // Loop over the tree events
   //--------------------------------------------------------------------------------------------------------------------------------------
@@ -309,9 +310,6 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      else if (Lepton_muonIdx[lep1Idx] >= 0){
        mass_1     = MUON_MASS;
      }
-     else{
-       continue;  //lepton 1 is not electron / muon;
-     }
 
 
      if (Lepton_electronIdx[lep2Idx] >= 0){
@@ -320,9 +318,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      else if (Lepton_muonIdx[lep2Idx] >= 0){
        mass_2     = MUON_MASS;
      }
-     else{
-       continue;  //lepton 2 is not electron / muon;
-     }
+
 
      lep1.SetPtEtaPhiM(Lepton_pt[lep1Idx], Lepton_eta[lep1Idx], Lepton_phi[lep1Idx], mass_1); 
      lep2.SetPtEtaPhiM(Lepton_pt[lep2Idx], Lepton_eta[lep2Idx], Lepton_phi[lep2Idx], mass_2); 
@@ -367,7 +363,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      
      if(nLepton > (lep2Idx + 1) && Lepton_pt[lep2Idx + 1] > 10){continue;}
      h_counter_pass_1->Fill(1, event_weight);
-     //root_output->Write("",TObject::kOverwrite);
+     root_output->Write("",TObject::kOverwrite);
      
      if(ll.M() < 12.){continue;}
      h_counter_pass_2->Fill(1, event_weight);
@@ -394,7 +390,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      if(ll.Pt() < 30.){continue;}
      h_counter_pass_5->Fill(1, event_weight);
 
-     if(MET_pt < 20.){continue;}
+     if(MET.Et() < 20.){continue;}
      h_counter_pass_6->Fill(1, event_weight);
 
      if(mpmet < 20.){continue;}
@@ -411,7 +407,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      h_pt2->Fill(Lepton_pt[lep2Idx], event_weight);
      h_eta1->Fill(Lepton_eta[lep1Idx], event_weight);
      h_eta2->Fill(Lepton_eta[lep2Idx], event_weight);
-     h_MET_pt->Fill(MET_pt, event_weight);
+     h_MET_pt->Fill(MET.Et(), event_weight);
      h_mpmet->Fill(mpmet, event_weight);
      h_mth->Fill(mth, event_weight);
      h_mtw2->Fill(mtw2, event_weight);
@@ -424,27 +420,27 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
   }
 
 
-  root_output->cd();  
-  h_counter_pass_1->Write();
-  h_counter_pass_2->Write();
-  h_counter_pass_3->Write();
-  h_counter_pass_4->Write();
-  h_counter_pass_5->Write();
-  h_counter_pass_6->Write();
-  h_counter_pass_7->Write();
-  h_counter_pass_8->Write();
-  h_counter_pass_9->Write();
-  h_pt1->Write();
-  h_pt2->Write();
-  h_eta1->Write();
-  h_eta2->Write();
-  h_MET_pt->Write();
-  h_mpmet->Write();
-  h_mth->Write();
-  h_mtw2->Write();
-  h_mll->Write();
-  h_ptll->Write();
-  h_dphill->Write();
+
+  // h_counter_pass_1->Write();
+  // h_counter_pass_2->Write();
+  // h_counter_pass_3->Write();
+  // h_counter_pass_4->Write();
+  // h_counter_pass_5->Write();
+  // h_counter_pass_6->Write();
+  // h_counter_pass_7->Write();
+  // h_counter_pass_8->Write();
+  // h_counter_pass_9->Write();
+  // h_pt1->Write();
+  // h_pt2->Write();
+  // h_eta1->Write();
+  // h_eta2->Write();
+  // h_MET_pt->Write();
+  // h_mpmet->Write();
+  // h_mth->Write();
+  // h_mtw2->Write();
+  // h_mll->Write();
+  // h_ptll->Write();
+  // h_dphill->Write();
 
   delete root_output;
 
