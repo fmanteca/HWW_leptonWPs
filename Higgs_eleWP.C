@@ -1,4 +1,4 @@
-//root -l -q -b "Higgs_muonWP.C(\"GluGluHToWWTo2L2NuPowheg_M125_private\",\"Tight\", \"mm\", \"high\", \"0j\")"
+//root -l -q -b "Higgs_eleWP.C(\"GluGluHToWWTo2L2NuPowheg_M125_private\",\"Tight_HWW\", \"em\", \"high\", \"0j\")"
 
 #include <iostream>
 #include <fstream>
@@ -8,12 +8,12 @@
 using namespace std;
 
 
-void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_cut, TString njet) {
+void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut, TString njet) {
 
 
   //Int_t MaxEvents = 1000;
 
-  TFile* root_output = new TFile("/afs/cern.ch/work/f/fernanpe/CMSSW_10_1_0/src/jobs_output/nanoLatino_" + sample + "_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root", "recreate");
+  TFile* root_output = new TFile("/afs/cern.ch/work/f/fernanpe/CMSSW_10_1_0/src/jobs_output_ele/nanoLatino_" + sample + "_" + eleWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root", "recreate");
   
   const Double_t MUON_MASS     = 0.106;     // [GeV]
   const Double_t ELECTRON_MASS = 0.000511;  // [GeV]
@@ -58,8 +58,28 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
   Int_t Lepton_isTightElectron_mvaFall17Iso[200];
   tree->SetBranchAddress("Lepton_isTightElectron_mvaFall17Iso",&Lepton_isTightElectron_mvaFall17Iso);
 
+  Bool_t Electron_mvaFall17Iso_WPL[200];
+  tree->SetBranchAddress("Electron_mvaFall17Iso_WPL",&Electron_mvaFall17Iso_WPL);
   Bool_t Electron_mvaFall17Iso_WP80[200];
   tree->SetBranchAddress("Electron_mvaFall17Iso_WP80",&Electron_mvaFall17Iso_WP80);
+  Bool_t Electron_mvaFall17Iso_WP90[200];
+  tree->SetBranchAddress("Electron_mvaFall17Iso_WP90",&Electron_mvaFall17Iso_WP90);
+  Bool_t Electron_mvaFall17noIso_WPL[200];
+  tree->SetBranchAddress("Electron_mvaFall17noIso_WPL",&Electron_mvaFall17noIso_WPL);
+  Bool_t Electron_mvaFall17noIso_WP80[200];
+  tree->SetBranchAddress("Electron_mvaFall17noIso_WP80",&Electron_mvaFall17noIso_WP80);
+  Bool_t Electron_mvaFall17noIso_WP90[200];
+  tree->SetBranchAddress("Electron_mvaFall17noIso_WP90",&Electron_mvaFall17noIso_WP90);
+  Int_t Electron_cutBased[200];
+  tree->SetBranchAddress("Electron_cutBased",&Electron_cutBased);
+  UChar_t Electron_lostHits[200];
+  tree->SetBranchAddress("Electron_lostHits",&Electron_lostHits);
+  Float_t Electron_dxy[200];
+  tree->SetBranchAddress("Electron_dxy",&Electron_dxy);
+  Float_t Electron_dz[200];
+  tree->SetBranchAddress("Electron_dz",&Electron_dz);
+
+
   Float_t Muon_dxy[200];
   tree->SetBranchAddress("Muon_dxy",&Muon_dxy);
   Float_t Muon_dz[200];
@@ -119,6 +139,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
   Int_t lep2Idx;
   Int_t temp_value;
 
+
   cout<<"Begin..."<<endl;
 
   // Create the output histograms
@@ -174,33 +195,38 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      }
      
 
-     //------------------------------ Check the muon WP (select the objets) --------------------------------------
+     //------------------------------ Check the electron WP (select the objets) --------------------------------------
 
-     if(channel == "mm"){ //Different flavor channel: Reject ee and mm channels
+     if(channel == "ee"){ //Different flavor channel: Reject ee and mm channels
 
        find_lep1 = 0;
        find_lep2 = 0;
 
        for(int k = 0; k < nLepton - 1; k++){
 	 
-	 if(Lepton_muonIdx[k] >= 0){
-	   
-	   if(muonWP == "Medium"){
-	     if(Lepton_isTightMuon_cut_Medium80x[k] == 1){find_lep1=1; lep1Idx=k; break;}
-	   }else if(muonWP == "Medium_HWW"){
-	     if(Lepton_pt[k] > 20. && Lepton_isTightMuon_cut_Medium80x[k] == 1 && TMath::Abs(Muon_dxy[Lepton_muonIdx[k]]) < 0.02 && TMath::Abs(Muon_dz[Lepton_muonIdx[k]]) < 0.1){find_lep1=1; lep1Idx=k; break;}
-	     else if(Lepton_pt[k] <= 20. && Lepton_isTightMuon_cut_Medium80x[k] == 1 && TMath::Abs(Muon_dxy[Lepton_muonIdx[k]]) < 0.01 && TMath::Abs(Muon_dz[Lepton_muonIdx[k]]) < 0.1){find_lep1=1; lep1Idx=k; break;}
-	   }else if(muonWP == "Tight"){
-	     if(Lepton_isTightMuon_cut_Tight80x[k] == 1){find_lep1=1; lep1Idx=k; break;}
-	   }else if(muonWP == "Tight_HWW"){
-	     if(Lepton_isTightMuon_cut_Tight80x_HWWW[k] == 1){find_lep1=1; lep1Idx=k; break;}
+	 if(Lepton_electronIdx[k] >= 0){
+	   if(eleWP == "Tight_HWW"){
+	     if(Lepton_eta[k] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[k]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[k]]) < 0.05 && Electron_cutBased[Lepton_electronIdx[k]] == 4 && Electron_lostHits[Lepton_electronIdx[k]] == 0){find_lep1=1; lep2Idx = k; break;}
+	     else if(Lepton_eta[k] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[k]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[k]]) < 0.1 && Electron_cutBased[Lepton_electronIdx[k]] == 4 && Electron_lostHits[Lepton_electronIdx[k]] == 0){find_lep1=1; lep2Idx = k; break;}
+	   }else if(eleWP == "mvaFall17noIso_WPL"){
+	     if(Electron_mvaFall17noIso_WPL[Lepton_electronIdx[k]] == 1){find_lep1=1; lep2Idx = k; break;}
+	   }else if(eleWP == "mvaFall17Iso_WPL"){
+	     if(Electron_mvaFall17Iso_WPL[Lepton_electronIdx[k]] == 1){find_lep1=1; lep2Idx = k; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP80"){
+	     if(Electron_mvaFall17noIso_WP80[Lepton_electronIdx[k]] == 1){find_lep1=1; lep2Idx = k; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP80"){
+	     if(Electron_mvaFall17Iso_WP80[Lepton_electronIdx[k]] == 1){find_lep1=1; lep2Idx = k; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP90"){
+	     if(Electron_mvaFall17noIso_WP90[Lepton_electronIdx[k]] == 1){find_lep1=1; lep2Idx = k; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP90"){
+	     if(Electron_mvaFall17Iso_WP90[Lepton_electronIdx[k]] == 1){find_lep1=1; lep2Idx = k; break;}
 	   }else{
-	     cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
+	     cout << "eleWP options: Medium, Tight, Tight_HWW" << endl;
 	     break;
 	   }
 	   
 	 }
-	
+	   	
        }
 
 
@@ -209,19 +235,24 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
 
        for(int m = lep1Idx + 1; m < nLepton; m++){
 	 
-	 if(Lepton_muonIdx[m] >= 0){
-	   
-	   if(muonWP == "Medium"){
-	     if(Lepton_isTightMuon_cut_Medium80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
-	   }else if(muonWP == "Medium_HWW"){
-	     if(Lepton_pt[m] > 20. && Lepton_isTightMuon_cut_Medium80x[m] == 1 && TMath::Abs(Muon_dxy[Lepton_muonIdx[m]]) < 0.02 && TMath::Abs(Muon_dz[Lepton_muonIdx[m]]) < 0.1){find_lep2=1; lep2Idx = m; break;}
-	     else if(Lepton_pt[m] <= 20. && Lepton_isTightMuon_cut_Medium80x[m] == 1 && TMath::Abs(Muon_dxy[Lepton_muonIdx[m]]) < 0.01 && TMath::Abs(Muon_dz[Lepton_muonIdx[m]]) < 0.1){find_lep2=1; lep2Idx = m; break;}
-	   }else if(muonWP == "Tight"){
-	     if(Lepton_isTightMuon_cut_Tight80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
-	   }else if(muonWP == "Tight_HWW"){
-	     if(Lepton_isTightMuon_cut_Tight80x_HWWW[m] == 1){find_lep2=1; lep2Idx = m; break;}
+	 if(Lepton_electronIdx[m] >= 0){
+	   if(eleWP == "Tight_HWW"){
+	     if(Lepton_eta[m] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.05 && Electron_cutBased[Lepton_electronIdx[m]] == 4 && Electron_lostHits[Lepton_electronIdx[m]] == 0){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_eta[m] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.1 && Electron_cutBased[Lepton_electronIdx[m]] == 4 && Electron_lostHits[Lepton_electronIdx[m]] == 0){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WPL"){
+	     if(Electron_mvaFall17noIso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WPL"){
+	     if(Electron_mvaFall17Iso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP80"){
+	     if(Electron_mvaFall17noIso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP80"){
+	     if(Electron_mvaFall17Iso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP90"){
+	     if(Electron_mvaFall17noIso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP90"){
+	     if(Electron_mvaFall17Iso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
 	   }else{
-	     cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
+	     cout << "eleWP options: Medium, Tight, Tight_HWW" << endl;
 	     break;
 	   }
 	   
@@ -244,34 +275,44 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
 
        for(int k = 0; k < nLepton; k++){
 	 // FIX the electron WP
-	 if(Lepton_electronIdx[k] >= 0){
-	   if(Electron_mvaFall17Iso_WP80[Lepton_electronIdx[k]] == 1){find_lep1=1; lep1Idx=k; break;}
+	 if(Lepton_muonIdx[k] >= 0){
+	   if(Lepton_isTightMuon_cut_Tight80x_HWWW[k] == 1){find_lep1=1; lep1Idx=k; break;}
 	 }
        }
        
        if(find_lep1==0){continue;}
 
 
+
+
        for(int m = 0; m < nLepton; m++){
 	 
-	 if(Lepton_muonIdx[m] >= 0){
-	   if(muonWP == "Medium"){
-	     if(Lepton_isTightMuon_cut_Medium80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
-	   }else if(muonWP == "Medium_HWW"){
-	     if(Lepton_pt[m] > 20. && Lepton_isTightMuon_cut_Medium80x[m] == 1 && TMath::Abs(Muon_dxy[Lepton_muonIdx[m]]) < 0.02 && TMath::Abs(Muon_dz[Lepton_muonIdx[m]]) < 0.1){find_lep2=1; lep2Idx = m; break;}
-	     else if(Lepton_pt[m] <= 20. && Lepton_isTightMuon_cut_Medium80x[m] == 1 && TMath::Abs(Muon_dxy[Lepton_muonIdx[m]]) < 0.01 && TMath::Abs(Muon_dz[Lepton_muonIdx[m]]) < 0.1){find_lep2=1; lep2Idx = m; break;}
-	   }else if(muonWP == "Tight"){
-	     if(Lepton_isTightMuon_cut_Tight80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
-	   }else if(muonWP == "Tight_HWW"){
-	     if(Lepton_isTightMuon_cut_Tight80x_HWWW[m] == 1){find_lep2=1; lep2Idx = m;break;}
+	 if(Lepton_electronIdx[m] >= 0){
+	   if(eleWP == "Tight_HWW"){
+	     //	     cout << "Eta:" << Lepton_eta[m] << " dz: " << TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) << " dxy: " << TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) << " cutBased: " <<  Electron_cutBased[Lepton_electronIdx[m]] << " lostHits: " << Electron_lostHits[Lepton_electronIdx[m]] << endl;
+	     if(Lepton_eta[m] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.05 && Electron_cutBased[Lepton_electronIdx[m]] == 4 && Electron_lostHits[Lepton_electronIdx[m]] == 0){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_eta[m] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.1 && Electron_cutBased[Lepton_electronIdx[m]] == 4 && Electron_lostHits[Lepton_electronIdx[m]] == 0){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WPL"){
+	     if(Electron_mvaFall17noIso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WPL"){
+	     if(Electron_mvaFall17Iso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP80"){
+	     if(Electron_mvaFall17noIso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP80"){
+	     if(Electron_mvaFall17Iso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP90"){
+	     if(Electron_mvaFall17noIso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP90"){
+	     if(Electron_mvaFall17Iso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
 	   }else{
-	     cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
+	     cout << "eleWP options: Medium, Tight, Tight_HWW" << endl;
 	     break;
 	   }
 	   
 	 }
 	
        }
+
 
        if(find_lep2 == 0){continue;}       
        
@@ -383,7 +424,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      if(nCleanJet>=10 && CleanJet_pt[9] > 20. && Jet_btagCSVV2[CleanJet_jetIdx[9]] > 0.5803){continue;}
      h_counter_pass_3->Fill(1., event_weight);
 
-     if(channel == "mm"){
+     if(channel == "ee"){
        if(TMath::Abs(ll.M() - 91.188) < 15.){continue;}
        h_counter_pass_4->Fill(1., event_weight);
      }else if(channel == "em"){
