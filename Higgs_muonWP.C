@@ -57,6 +57,14 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
 
   Int_t Lepton_isTightElectron_mvaFall17Iso[200];
   tree->SetBranchAddress("Lepton_isTightElectron_mvaFall17Iso",&Lepton_isTightElectron_mvaFall17Iso);
+  Int_t Electron_cutBased[200];
+  tree->SetBranchAddress("Electron_cutBased",&Electron_cutBased);
+  UChar_t Electron_lostHits[200];
+  tree->SetBranchAddress("Electron_lostHits",&Electron_lostHits);
+  Float_t Electron_dxy[200];
+  tree->SetBranchAddress("Electron_dxy",&Electron_dxy);
+  Float_t Electron_dz[200];
+  tree->SetBranchAddress("Electron_dz",&Electron_dz);
 
   Bool_t Electron_mvaFall17Iso_WP80[200];
   tree->SetBranchAddress("Electron_mvaFall17Iso_WP80",&Electron_mvaFall17Iso_WP80);
@@ -245,7 +253,8 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
        for(int k = 0; k < nLepton; k++){
 	 // FIX the electron WP
 	 if(Lepton_electronIdx[k] >= 0){
-	   if(Electron_mvaFall17Iso_WP80[Lepton_electronIdx[k]] == 1){find_lep1=1; lep1Idx=k; break;}
+	   if(Lepton_eta[k] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[k]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[k]]) < 0.05 && Electron_cutBased[Lepton_electronIdx[k]] == 4 && Electron_lostHits[Lepton_electronIdx[k]] == 0){find_lep1=1; lep1Idx = k; break;}
+	   else if(Lepton_eta[k] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[k]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[k]]) < 0.1 && Electron_cutBased[Lepton_electronIdx[k]] == 4 && Electron_lostHits[Lepton_electronIdx[k]] == 0){find_lep1=1; lep1Idx = k; break;}
 	 }
        }
        

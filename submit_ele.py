@@ -7,7 +7,7 @@ SAMPLES={"GluGluHToWWTo2L2NuPowheg_M125_private","DYJetsToLL_M-50__part0","DYJet
 
 #WPS={"Medium","Medium_HWW","Tight","Tight_HWW"}
 
-WPS={"Tight_HWW", "mvaFall17noIso_WPL", "mvaFall17Iso_WPL", "mvaFall17noIso_WP80", "mvaFall17Iso_WP80", "mvaFall17noIso_WP90", "mvaFall17Iso_WP90"}
+WPS={"Tight_HWW", "mvaFall17noIso_WPL", "mvaFall17Iso_WPL", "mvaFall17noIso_WP80", "mvaFall17Iso_WP80", "mvaFall17noIso_WP90", "mvaFall17Iso_WP90", "mvaFall17noIso_WPL_HWW", "mvaFall17Iso_WPL_HWW", "mvaFall17noIso_WP80_HWW", "mvaFall17Iso_WP80_HWW", "mvaFall17noIso_WP90_HWW", "mvaFall17Iso_WP90_HWW"}
 
 #CH = {"em","mm"}
 CH = {"em"}
@@ -16,7 +16,7 @@ CH = {"em"}
 P2 = {"high","low"}
 #P2 = {"high"}
 
-JET = {"0j","1j","Incl"}
+JET = {"0j","1j"}
 #JET = {"0j"}
 
 
