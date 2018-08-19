@@ -11,7 +11,7 @@ using namespace std;
 void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut, TString njet) {
 
 
-  Int_t MaxEvents = 1000;
+  //Int_t MaxEvents = 1000;
 
   TFile* root_output = new TFile("/afs/cern.ch/work/f/fernanpe/CMSSW_10_1_0/src/jobs_output_ele/nanoLatino_" + sample + "_" + eleWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root", "recreate");
   
@@ -177,10 +177,10 @@ void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut
     int nentries = tree->GetEntriesFast();
     if(fmod(j,100000)==0) Printf(" ..... event %d of %d", int(j), int(nentries));
 
-     if(j > MaxEvents){
-       cout << "finished for " << MaxEvents << " events" << endl;
-       break;
-     }
+     // if(j > MaxEvents){
+     //   cout << "finished for " << MaxEvents << " events" << endl;
+     //   break;
+     // }
 
      //------------------------------ Pre-Preselection --------------------------------------
 
