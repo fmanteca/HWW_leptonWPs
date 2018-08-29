@@ -43,7 +43,7 @@ root -l -q -b "Higgs_muonWP.C(\"nanoLatino_GluGluHToWWTo2L2NuPowheg_M125_private
 
 
 
-## 4. Print the results as .tex tables
+## 4. Get the results as .tex tables
 
 ```
 root -l -q -b "PrintResults.C(\"Medium_HWW\", \"em\", \"high\", \"0j\")" >> Medium_HWW_em_high_0j.tex
