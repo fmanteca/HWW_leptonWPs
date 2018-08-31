@@ -10,7 +10,7 @@ using namespace std;
 
 void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_cut, TString njet) {
 
-
+  Bool_t ele_leading = 1; //Require the electron to be the leading lepton or not. em + me will be considered in case ele_leading = 0
   //Int_t MaxEvents = 1000;
 
   TFile* root_output = new TFile("/afs/cern.ch/work/f/fernanpe/CMSSW_10_1_0/src/jobs_output/nanoLatino_" + sample + "_" + muonWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root", "recreate");
@@ -22,8 +22,12 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
   // Import the nanoLatino Tree
   //--------------------------------------------------------------------------------------------------------------------------------------
   TChain* tree = new TChain("Events");
-
-  TString myFolder = "/eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/Fall2017_nAOD_v1_Study2017/MCl1loose2017__baseW__hadd/";
+  
+  // if(sample.Contains("Run")){ //DATA
+  //   TString myFolder = "/eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/Run2017_nAOD_v1_Study2017/DATAl1loose2017__hadd/";
+  // }else{ //MC
+    TString myFolder = "/eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/Fall2017_nAOD_v1_Study2017/MCl1loose2017__baseW__hadd/";
+    //  }
 
   TString file = "";
 
@@ -189,7 +193,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
        find_lep1 = 0;
        find_lep2 = 0;
 
-       for(int k = 0; k < nLepton - 1; k++){
+       for(Int_t k = 0; k < nLepton - 1; k++){
 	 
 	 if(Lepton_muonIdx[k] >= 0){
 	   
@@ -215,7 +219,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
        if(find_lep1 == 0){continue;}       
        
 
-       for(int m = lep1Idx + 1; m < nLepton; m++){
+       for(Int_t m = lep1Idx + 1; m < nLepton; m++){
 	 
 	 if(Lepton_muonIdx[m] >= 0){
 	   
@@ -245,12 +249,12 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
 
 
 
-     if(channel == "em"){
+     if(channel == "em" && ele_leading == 0){ //em + me
        
        find_lep1 = 0;
        find_lep2 = 0;
 
-       for(int k = 0; k < nLepton; k++){
+       for(Int_t k = 0; k < nLepton; k++){
 	 // FIX the electron WP
 	 if(Lepton_electronIdx[k] >= 0){
 	   if(Lepton_eta[k] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[k]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[k]]) < 0.05 && Electron_cutBased[Lepton_electronIdx[k]] == 4 && Electron_lostHits[Lepton_electronIdx[k]] == 0){find_lep1=1; lep1Idx = k; break;}
@@ -261,7 +265,7 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
        if(find_lep1==0){continue;}
 
 
-       for(int m = 0; m < nLepton; m++){
+       for(Int_t m = 0; m < nLepton; m++){
 	 
 	 if(Lepton_muonIdx[m] >= 0){
 	   if(muonWP == "Medium"){
@@ -292,6 +296,52 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
 	 lep1Idx = lep2Idx;
 	 lep2Idx = temp_value;
        }
+
+     }
+
+
+
+
+     else if(channel == "em" && ele_leading == 1){ //the electron will be the leading lepton
+       
+       find_lep1 = 0;
+       find_lep2 = 0;
+
+       for(Int_t k = 0; k < nLepton - 1; k++){
+	 // FIX the electron WP
+	 if(Lepton_electronIdx[k] >= 0){
+	   if(Lepton_eta[k] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[k]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[k]]) < 0.05 && Electron_cutBased[Lepton_electronIdx[k]] == 4 && Electron_lostHits[Lepton_electronIdx[k]] == 0){find_lep1=1; lep1Idx = k; break;}
+	   else if(Lepton_eta[k] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[k]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[k]]) < 0.1 && Electron_cutBased[Lepton_electronIdx[k]] == 4 && Electron_lostHits[Lepton_electronIdx[k]] == 0){find_lep1=1; lep1Idx = k; break;}
+	 }
+       }
+       
+       if(find_lep1==0){continue;}
+
+
+       for(Int_t m = lep1Idx + 1; m < nLepton; m++){
+	 
+	 if(Lepton_muonIdx[m] >= 0){
+	   if(muonWP == "Medium"){
+	     if(Lepton_isTightMuon_cut_Medium80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(muonWP == "Medium_HWW"){
+	     if(Lepton_pt[m] > 20. && Lepton_isTightMuon_cut_Medium80x[m] == 1 && TMath::Abs(Muon_dxy[Lepton_muonIdx[m]]) < 0.02 && TMath::Abs(Muon_dz[Lepton_muonIdx[m]]) < 0.1){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_pt[m] <= 20. && Lepton_isTightMuon_cut_Medium80x[m] == 1 && TMath::Abs(Muon_dxy[Lepton_muonIdx[m]]) < 0.01 && TMath::Abs(Muon_dz[Lepton_muonIdx[m]]) < 0.1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(muonWP == "Tight"){
+	     if(Lepton_isTightMuon_cut_Tight80x[m] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(muonWP == "Tight_HWW"){
+	     if(Lepton_isTightMuon_cut_Tight80x_HWWW[m] == 1){find_lep2=1; lep2Idx = m;break;}
+	   }else{
+	     cout << "muonWP options: Medium, Tight, Tight_HWW" << endl;
+	     break;
+	   }
+	   
+	 }
+	
+       }
+
+       if(find_lep2 == 0){continue;}       
+       
+
 
      }
 
@@ -369,8 +419,11 @@ void Higgs_muonWP(TString sample, TString muonWP, TString channel, TString pt2_c
      
      //------------------------------ Selection --------------------------------------
 
-     //event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi; //old 2016 latino weight
-     event_weight = puWeight * baseW * Generator_weight * lumi;
+     if(sample.Contains("Run")){ //DATA
+       event_weight = 1.0;
+     }else{ //MC
+       event_weight = puWeight * baseW * Generator_weight * lumi;
+     }
 
      
      if(nLepton > (lep2Idx + 1) && Lepton_pt[lep2Idx + 1] > 10){continue;}

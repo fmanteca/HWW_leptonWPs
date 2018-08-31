@@ -10,7 +10,7 @@ using namespace std;
 
 void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut, TString njet) {
 
-
+  Bool_t muon_leading = 1; //Require the muon to be the leading lepton or not. em + me will be considered in case muon_leading = 0
   //Int_t MaxEvents = 1000;
 
   TFile* root_output = new TFile("/afs/cern.ch/work/f/fernanpe/CMSSW_10_1_0/src/jobs_output_ele/nanoLatino_" + sample + "_" + eleWP + "_" + channel + "_" + pt2_cut + "_" + njet + ".root", "recreate");
@@ -23,7 +23,11 @@ void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut
   //--------------------------------------------------------------------------------------------------------------------------------------
   TChain* tree = new TChain("Events");
 
-  TString myFolder = "/eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/Fall2017_nAOD_v1_Study2017/MCl1loose2017__baseW__hadd/";
+  // if(sample.Contains("Run")){ //DATA
+  //   TString myFolder = "/eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/Run2017_nAOD_v1_Study2017/DATAl1loose2017__hadd/";
+  // }else{ //MC
+    TString myFolder = "/eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/Fall2017_nAOD_v1_Study2017/MCl1loose2017__baseW__hadd/";
+    //  }
 
   TString file = "";
 
@@ -202,7 +206,7 @@ void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut
        find_lep1 = 0;
        find_lep2 = 0;
 
-       for(int k = 0; k < nLepton - 1; k++){
+       for(Int_t k = 0; k < nLepton - 1; k++){
 	 
 	 if(Lepton_electronIdx[k] >= 0){
 	   if(eleWP == "Tight_HWW"){
@@ -251,7 +255,7 @@ void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut
        if(find_lep1 == 0){continue;}       
        
 
-       for(int m = lep1Idx + 1; m < nLepton; m++){
+       for(Int_t m = lep1Idx + 1; m < nLepton; m++){
 	 
 	 if(Lepton_electronIdx[m] >= 0){
 	   if(eleWP == "Tight_HWW"){
@@ -304,12 +308,12 @@ void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut
 
 
 
-     if(channel == "em"){
+     if(channel == "em" && muon_leading == 0){ //em + me
        
        find_lep1 = 0;
        find_lep2 = 0;
 
-       for(int k = 0; k < nLepton; k++){
+       for(Int_t k = 0; k < nLepton; k++){
 	 // FIX the electron WP
 	 if(Lepton_muonIdx[k] >= 0){
 	   if(Lepton_isTightMuon_cut_Tight80x_HWWW[k] == 1){find_lep1=1; lep1Idx=k; break;}
@@ -321,7 +325,7 @@ void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut
 
 
 
-       for(int m = 0; m < nLepton; m++){
+       for(Int_t m = 0; m < nLepton; m++){
 	 
 	 if(Lepton_electronIdx[m] >= 0){
 	   if(eleWP == "Tight_HWW"){
@@ -379,6 +383,78 @@ void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut
 	 lep2Idx = temp_value;
        }
 
+     }
+
+
+
+
+
+     else if(channel == "em" && muon_leading == 1){ //the muon will be the leading lepton
+       
+       find_lep1 = 0;
+       find_lep2 = 0;
+
+       for(Int_t k = 0; k < nLepton - 1; k++){
+	 // FIX the electron WP
+	 if(Lepton_muonIdx[k] >= 0){
+	   if(Lepton_isTightMuon_cut_Tight80x_HWWW[k] == 1){find_lep1=1; lep1Idx=k; break;}
+	 }
+       }
+       
+       if(find_lep1==0){continue;}
+
+
+
+
+       for(Int_t m = lep1Idx + 1; m < nLepton; m++){
+	 
+	 if(Lepton_electronIdx[m] >= 0){
+	   if(eleWP == "Tight_HWW"){
+	     //	     cout << "Eta:" << Lepton_eta[m] << " dz: " << TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) << " dxy: " << TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) << " cutBased: " <<  Electron_cutBased[Lepton_electronIdx[m]] << " lostHits: " << Electron_lostHits[Lepton_electronIdx[m]] << endl;
+	     if(Lepton_eta[m] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.05 && Electron_cutBased[Lepton_electronIdx[m]] == 4 && Electron_lostHits[Lepton_electronIdx[m]] == 0){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_eta[m] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.1 && Electron_cutBased[Lepton_electronIdx[m]] == 4 && Electron_lostHits[Lepton_electronIdx[m]] == 0){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WPL"){
+	     if(Electron_mvaFall17noIso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WPL"){
+	     if(Electron_mvaFall17Iso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP80"){
+	     if(Electron_mvaFall17noIso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP80"){
+	     if(Electron_mvaFall17Iso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP90"){
+	     if(Electron_mvaFall17noIso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP90"){
+	     if(Electron_mvaFall17Iso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WPL_HWW"){
+	     if(Lepton_eta[m] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.05 && Electron_mvaFall17noIso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_eta[m] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.1 && Electron_mvaFall17noIso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WPL_HWW"){
+	     if(Lepton_eta[m] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.05 && Electron_mvaFall17Iso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_eta[m] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.1 && Electron_mvaFall17Iso_WPL[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP80_HWW"){
+	     if(Lepton_eta[m] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.05 && Electron_mvaFall17noIso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_eta[m] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.1 && Electron_mvaFall17noIso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP80_HWW"){
+	     if(Lepton_eta[m] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.05 && Electron_mvaFall17Iso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_eta[m] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.1 && Electron_mvaFall17Iso_WP80[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17noIso_WP90_HWW"){
+	     if(Lepton_eta[m] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.05 && Electron_mvaFall17noIso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_eta[m] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.1 && Electron_mvaFall17noIso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else if(eleWP == "mvaFall17Iso_WP90_HWW"){
+	     if(Lepton_eta[m] <= 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.1 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.05 && Electron_mvaFall17Iso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	     else if(Lepton_eta[m] > 1.479 && TMath::Abs(Electron_dz[Lepton_electronIdx[m]]) < 0.2 && TMath::Abs(Electron_dxy[Lepton_electronIdx[m]]) < 0.1 && Electron_mvaFall17Iso_WP90[Lepton_electronIdx[m]] == 1){find_lep2=1; lep2Idx = m; break;}
+	   }else{
+	     cout << "eleWP options: Medium, Tight, Tight_HWW" << endl;
+	     break;
+	   }
+	   
+	 }
+	
+       }
+
+
+       if(find_lep2 == 0){continue;}       
+       
      }
 
 
@@ -455,8 +531,11 @@ void Higgs_eleWP(TString sample, TString eleWP, TString channel, TString pt2_cut
      
      //------------------------------ Selection --------------------------------------
 
-     //event_weight = puWeight * baseW * Generator_weight / TMath::Abs(Generator_weight) * lumi; //old 2016 latino weight
-     event_weight = puWeight * baseW * Generator_weight * lumi;
+     if(sample.Contains("Run")){ //DATA
+       event_weight = 1.0;
+     }else{ //MC
+       event_weight = puWeight * baseW * Generator_weight * lumi;
+     }
 
      
      if(nLepton > (lep2Idx + 1) && Lepton_pt[lep2Idx + 1] > 10){continue;}
